@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 FIFA World Cup – Knockout Brackets</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(160deg, #070b1a 0%, #14103a 45%, #0b1628 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        /* ───── BRACKET STRUCTURE ───── */
+        .bracket-scroll {
+            overflow-x: auto;
+            padding: 0 24px 36px;
+        }
+        .bracket-flex {
+            display: inline-flex;
+            align-items: stretch;
+            min-height: 820px;
+        }
+
+        /* A round column */
+        .round {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Round header */
+        .rhdr {
+            font-size: 9px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 2px; color: rgba(255,255,255,.3);
+            text-align: center; padding: 6px 4px 10px; white-space: nowrap;
+        }
+        .rhdr.gold { color: #f59e0b; }
+
+        /* Matches wrapper inside a round – grows to fill */
+        .rmatches {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* A "match-slot" that takes equal flex space in its column */
+        .mslot {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 0;
+            min-height: 88px;
+        }
+
+        /* ───── CONNECTOR COLUMN ───── */
+        .conn {
+            width: 32px;
+            min-width: 32px;
+            display: flex;
+            flex-direction: column;
+        }
+        .conn-hdr {
+            padding: 6px 0 10px;
+            font-size: 9px;
+            visibility: hidden;
+        }
+        .conn-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Each pair section in connector */
+        .conn-pair {
+            flex: 1;
+            position: relative;
+        }
+
+        /* Lines via pseudo-elements + borders */
+        /* RIGHT-pointing connector (left bracket) */
+        .conn-pair.dir-r::before {
+            content: '';
+            position: absolute;
+            top: 25%; bottom: 25%;
+            left: 0; width: 50%;
+            border-top: 1.5px solid rgba(139,92,246,.25);
+            border-bottom: 1.5px solid rgba(139,92,246,.25);
+            border-right: 1.5px solid rgba(139,92,246,.25);
+            border-radius: 0 6px 6px 0;
+        }
+        .conn-pair.dir-r::after {
+            content: '';
+            position: absolute;
+            top: 50%; transform: translateY(-50%);
+            left: 50%; width: 50%;
+            border-top: 1.5px solid rgba(139,92,246,.25);
+        }
+
+        /* LEFT-pointing connector (right bracket) */
+        .conn-pair.dir-l::before {
+            content: '';
+            position: absolute;
+            top: 25%; bottom: 25%;
+            right: 0; width: 50%;
+            border-top: 1.5px solid rgba(139,92,246,.25);
+            border-bottom: 1.5px solid rgba(139,92,246,.25);
+            border-left: 1.5px solid rgba(139,92,246,.25);
+            border-radius: 6px 0 0 6px;
+        }
+        .conn-pair.dir-l::after {
+            content: '';
+            position: absolute;
+            top: 50%; transform: translateY(-50%);
+            right: 50%; width: 50%;
+            border-top: 1.5px solid rgba(139,92,246,.25);
+        }
+
+        /* Single horizontal line (SF→Final) */
+        .conn-pair.dir-r.single::before { display: none; }
+        .conn-pair.dir-r.single::after { left: 0; width: 100%; }
+        .conn-pair.dir-l.single::before { display: none; }
+        .conn-pair.dir-l.single::after { right: 0; width: 100%; }
+
+        /* ───── MATCH CARD ───── */
+        .mc {
+            background: rgba(255,255,255,.04);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 10px;
+            width: 234px;
+            overflow: hidden;
+            transition: all .22s ease;
+            position: relative;
+        }
+        .mc:hover {
+            transform: translateY(-1px) scale(1.015);
+            box-shadow: 0 8px 28px rgba(99,60,255,.18);
+            border-color: rgba(139,92,246,.35);
+            background: rgba(255,255,255,.065);
+        }
+        .mc.final { border-color: rgba(245,158,11,.3); background: rgba(245,158,11,.035); }
+        .mc.final:hover { box-shadow: 0 8px 28px rgba(245,158,11,.18); border-color: rgba(245,158,11,.5); }
+        .mc.third { border-color: rgba(168,85,247,.18); background: rgba(168,85,247,.025); }
+
+        .mc .meta {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 4px 9px; font-size: 8.5px; color: rgba(255,255,255,.28);
+        }
+        .mc .mnum {
+            background: rgba(255,255,255,.06); padding: 1px 5px;
+            border-radius: 4px; font-weight: 700; font-size: 7.5px; letter-spacing: .4px;
+        }
+        .mc .venue {
+            font-size: 8px; color: rgba(255,255,255,.18); text-align: center;
+            padding: 0 8px 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .tr {
+            display: flex; align-items: center; padding: 6px 9px; gap: 7px;
+            transition: background .15s;
+        }
+        .tr.w { background: rgba(34,197,94,.1); }
+        .tr.l { opacity: .4; }
+        .tr .fl {
+            width: 22px; height: 15px; border-radius: 2px; object-fit: cover;
+            flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,.35);
+            background: rgba(255,255,255,.04);
+        }
+        .tr .nm {
+            flex: 1; font-size: 11.5px; font-weight: 600; color: #fff;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
+        }
+        .tr .sb { display: flex; align-items: center; gap: 3px; }
+        .tr .ps { font-size: 9.5px; font-weight: 600; color: rgba(255,255,255,.4); }
+        .tr .fs { font-size: 14px; font-weight: 800; color: #fff; min-width: 14px; text-align: center; }
+
+        .dvd { height: 1px; background: rgba(255,255,255,.06); margin: 0 9px; }
+
+        .exinfo { text-align: center; font-size: 7.5px; font-weight: 700; letter-spacing: .8px;
+                   text-transform: uppercase; padding: 2px 0 4px; }
+        .exinfo.aet { color: rgba(251,191,36,.55); }
+        .exinfo.pen { color: rgba(248,113,113,.55); }
+
+        .champ {
+            position: absolute; top: 0; right: 0;
+            background: linear-gradient(135deg,#f59e0b,#d97706);
+            color: #fff; font-size: 7px; font-weight: 800;
+            padding: 2px 7px; border-radius: 0 9px 0 7px;
+            text-transform: uppercase; letter-spacing: .8px;
+        }
+
+        /* ───── TABS ───── */
+        .tab {
+            padding: 6px 16px; border-radius: 999px; font-size: 11px; font-weight: 700;
+            color: rgba(255,255,255,.4); background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.07); cursor: pointer; transition: all .2s;
+        }
+        .tab:hover { color: #fff; border-color: rgba(139,92,246,.35); }
+        .tab.on {
+            background: rgba(139,92,246,.22); color: #fff;
+            border-color: rgba(139,92,246,.45); box-shadow: 0 0 16px rgba(139,92,246,.12);
+        }
+
+        .spinner {
+            width: 36px; height: 36px;
+            border: 3px solid rgba(255,255,255,.07);
+            border-top-color: #8b5cf6; border-radius: 50%;
+            animation: sp .7s linear infinite;
+        }
+        @keyframes sp { to { transform: rotate(360deg); } }
+        .tp { animation: tpp 2.2s ease-in-out infinite; }
+        @keyframes tpp { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
+
+        ::-webkit-scrollbar { height: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,.02); }
+        ::-webkit-scrollbar-thumb { background: rgba(139,92,246,.25); border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="text-center pt-7 pb-3 px-4">
+    <div class="flex items-center justify-center gap-2 mb-1">
+        <span class="text-2xl">⚽</span>
+        <h1 class="text-2xl md:text-3xl font-black tracking-tight bg-gradient-to-r from-violet-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">
+            FIFA World Cup 2026
+        </h1>
+        <span class="text-2xl tp">🏆</span>
+    </div>
+    <p class="text-[10px] text-white/25 tracking-[3px] uppercase">United States · Mexico · Canada</p>
+    <p class="text-sm font-bold text-white/45 mt-2">Knockout Stage Brackets</p>
+</header>
+
+<!-- TABS -->
+<div class="flex justify-center gap-2 mb-2 px-4 flex-wrap" id="tabs">
+    <button class="tab on" data-v="full">Full Bracket</button>
+    <button class="tab" data-v="left">Left Half</button>
+    <button class="tab" data-v="right">Right Half</button>
+</div>
+
+<!-- LOADING -->
+<div id="ld" class="flex flex-col items-center justify-center py-20">
+    <div class="spinner mb-3"></div>
+    <p class="text-white/35 text-xs">Fetching match data…</p>
+</div>
+
+<!-- ERROR -->
+<div id="err" class="hidden flex flex-col items-center justify-center py-20 px-4">
+    <p class="text-red-400 font-bold mb-1">Unable to load data</p>
+    <p id="errmsg" class="text-white/35 text-xs text-center mb-3"></p>
+    <button onclick="load()" class="px-4 py-1.5 bg-violet-600 hover:bg-violet-500 rounded-lg font-bold text-xs transition">Retry</button>
+</div>
+
+<!-- BRACKET -->
+<div id="area" class="hidden">
+    <div id="vFull" class="bv"></div>
+    <div id="vLeft" class="bv hidden"></div>
+    <div id="vRight" class="bv hidden"></div>
+</div>
+
+<!-- FOOTER -->
+<footer class="text-center py-5 text-white/18 text-[9px] px-4 space-y-1">
+    <p>Data: <a href="https://github.com/openfootball/worldcup.json" target="_blank" class="underline hover:text-white/40">openfootball/worldcup.json</a> · Flags: flagcdn.com</p>
+    <p>
+        <span class="inline-block w-1.5 h-1.5 rounded-full bg-green-500/50 mr-0.5 align-middle"></span>Winner
+        <span class="inline-block w-1.5 h-1.5 rounded-full bg-white/10 mr-0.5 ml-2 align-middle"></span>Eliminated
+        <span class="text-amber-400/50 ml-2">AET</span> After Extra Time
+        <span class="text-red-400/50 ml-2">PEN</span> Penalties
+    </p>
+</footer>
+
+<script>
+const DATA_URL = 'https://raw.githubusercontent.com/openfootball/worldcup.json/refs/heads/master/2026/worldcup.json';
+
+/*  ══════════════════════════════════════════════════════════
+    OFFICIAL BRACKET TREE  (from FIFA / openfootball)
+    
+    LEFT side → feeds Semi-Final 101 → Final 104 (team 1)
+      R32:  74  77  |  73  75  |  83  84  |  81  82
+      R16:   89     |   90     |   93     |   94
+      QF:      97              |      98
+      SF:              101
+
+    RIGHT side → feeds Semi-Final 102 → Final 104 (team 2)
+      R32:  76  78  |  79  80  |  86  88  |  85  87
+      R16:   91     |   92     |   95     |   96
+      QF:      99              |     100
+      SF:              102
+
+    Final: 104 = W101 vs W102
+    Third: 103 = L101 vs L102
+    ══════════════════════════════════════════════════════════ */
+
+// Bracket tree: each QF has 2 R16 children; each R16 has 2 R32 children
+// Left half
+const LEFT = {
+    sf: 101,
+    qf: [
+        { num: 97, r16: [
+            { num: 89, r32: [74, 77] },
+            { num: 90, r32: [73, 75] }
+        ]},
+        { num: 98, r16: [
+            { num: 93, r32: [83, 84] },
+            { num: 94, r32: [81, 82] }
+        ]}
+    ]
+};
+
+// Right half
+const RIGHT = {
+    sf: 102,
+    qf: [
+        { num: 99, r16: [
+            { num: 91, r32: [76, 78] },
+            { num: 92, r32: [79, 80] }
+        ]},
+        { num: 100, r16: [
+            { num: 95, r32: [86, 88] },
+            { num: 96, r32: [85, 87] }
+        ]}
+    ]
+};
+
+const FINAL_NUM = 104;
+const THIRD_NUM = 103;
+
+/* ══════ FLAGS ══════ */
+const CC={
+    'Mexico':'mx','South Africa':'za','South Korea':'kr','Czech Republic':'cz',
+    'Canada':'ca','Bosnia & Herzegovina':'ba','Qatar':'qa','Switzerland':'ch',
+    'Brazil':'br','Morocco':'ma','Haiti':'ht','Scotland':'gb-sct',
+    'USA':'us','Paraguay':'py','Australia':'au','Japan':'jp',
+    'England':'gb-eng','Wales':'gb-wls','France':'fr','Germany':'de',
+    'Spain':'es','Portugal':'pt','Argentina':'ar','Uruguay':'uy',
+    'Colombia':'co','Chile':'cl','Peru':'pe','Ecuador':'ec',
+    'Netherlands':'nl','Belgium':'be','Denmark':'dk','Sweden':'se',
+    'Norway':'no','Poland':'pl','Croatia':'hr','Serbia':'rs',
+    'Italy':'it','Austria':'at','Hungary':'hu','Turkey':'tr',
+    'Greece':'gr','Romania':'ro','Ukraine':'ua','Nigeria':'ng',
+    'Senegal':'sn','Ghana':'gh','Cameroon':'cm','Egypt':'eg',
+    'Tunisia':'tn','Algeria':'dz','Ivory Coast':'ci','Iran':'ir',
+    'Saudi Arabia':'sa','Indonesia':'id','Costa Rica':'cr',
+    'Panama':'pa','Jamaica':'jm','Bolivia':'bo','Venezuela':'ve',
+    'Iceland':'is','Ireland':'ie','Finland':'fi','Slovakia':'sk',
+    'Slovenia':'si','Albania':'al','North Macedonia':'mk',
+    'Montenegro':'me','Georgia':'ge','New Zealand':'nz','Uzbekistan':'uz',
+    'DR Congo':'cd','Cape Verde':'cv','Jordan':'jo','Bulgaria':'bg',
+    'Kosovo':'xk','Estonia':'ee','Latvia':'lv','Lithuania':'lt',
+    'Belarus':'by','Moldova':'md','Armenia':'am','Azerbaijan':'az',
+    'Kazakhstan':'kz','Bahrain':'bh','Oman':'om','Kuwait':'kw',
+    'UAE':'ae','Mali':'ml','Burkina Faso':'bf','Tanzania':'tz',
+    'Kenya':'ke','Uganda':'ug','Zambia':'zm','Zimbabwe':'zw',
+    'Angola':'ao','Guatemala':'gt','El Salvador':'sv','Cuba':'cu',
+    'Dominican Republic':'do','Suriname':'sr','Nicaragua':'ni',
+    'Palestine':'ps','Syria':'sy','Lebanon':'lb','Tajikistan':'tj',
+    'Vietnam':'vn','Thailand':'th','Philippines':'ph','Trinidad & Tobago':'tt',
+    'Rwanda':'rw','Comoros':'km','Madagascar':'mg','Namibia':'na',
+    'Botswana':'bw','Malawi':'mw','Liberia':'lr','Sierra Leone':'sl',
+    'Guinea':'gn','Gambia':'gm','Mauritania':'mr','Libya':'ly',
+    'Sudan':'sd','South Sudan':'ss','Togo':'tg','Benin':'bj',
+    'Niger':'ne','Republic of Congo':'cg','Equatorial Guinea':'gq','Gabon':'ga',
+};
+
+function flg(t) {
+    if (!t || t === 'TBD') return '';
+    const c = CC[t];
+    return c ? `https://flagcdn.com/w40/${c}.png` : '';
+}
+
+function fdt(d) {
+    if (!d) return 'TBD';
+    const x = new Date(d + 'T12:00:00Z');
+    return x.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+}
+
+/* ══════ MATCH HELPERS ══════ */
+function winner(m) {
+    if (!m || !m.score) return null;
+    const ft = m.score.ft;
+    if (!ft) return null;
+    const p = m.score.p || m.score.pen;
+    if (p) return p[0] > p[1] ? m.team1 : m.team2;
+    if (m.score.et) { const e = m.score.et; if (e[0] !== e[1]) return e[0] > e[1] ? m.team1 : m.team2; }
+    if (ft[0] !== ft[1]) return ft[0] > ft[1] ? m.team1 : m.team2;
+    return null;
+}
+
+/* ══════ CARD HTML ══════ */
+function card(m, opts = {}) {
+    if (!m) return `<div class="mc" style="width:234px;text-align:center;padding:20px 8px;color:rgba(255,255,255,.12);font-size:11px;font-weight:600;">Match TBD</div>`;
+
+    const w = winner(m);
+    const ft = m.score && m.score.ft;
+    const et = m.score && m.score.et;
+    const pen = m.score && (m.score.p || m.score.pen);
+    let s1 = ft ? ft[0] : '–', s2 = ft ? ft[1] : '–', extra = '';
+    if (et) { s1 = et[0]; s2 = et[1]; extra = 'aet'; }
+    if (pen) extra = 'pen';
+
+    const t1c = w ? (w === m.team1 ? 'w' : 'l') : '';
+    const t2c = w ? (w === m.team2 ? 'w' : 'l') : '';
+    const cls = opts.isFinal ? 'final' : (opts.isThird ? 'third' : '');
+    const badge = (opts.isFinal && w) ? `<div class="champ">🏆 Champion</div>` : '';
+    const f1 = flg(m.team1), f2 = flg(m.team2);
+    const p1 = pen ? `<span class="ps">(${pen[0]})</span>` : '';
+    const p2 = pen ? `<span class="ps">(${pen[1]})</span>` : '';
+    const exH = extra === 'aet' ? '<div class="exinfo aet">After Extra Time</div>'
+              : extra === 'pen' ? '<div class="exinfo pen">Penalties</div>' : '';
+    const mn = m.num ? `<span class="mnum">#${m.num}</span>` : '';
+    const vn = m.ground || '';
+
+    return `<div class="mc ${cls}">
+        ${badge}
+        <div class="meta"><span>${fdt(m.date)}</span>${mn}</div>
+        ${vn ? `<div class="venue" title="${vn}">📍 ${vn}</div>` : ''}
+        <div class="tr ${t1c}">
+            ${f1 ? `<img class="fl" src="${f1}" alt="${m.team1}" loading="lazy" onerror="this.style.visibility='hidden'">` : '<div class="fl"></div>'}
+            <span class="nm">${m.team1 || 'TBD'}</span>
+            <div class="sb">${p1}<span class="fs">${s1}</span></div>
+        </div>
+        <div class="dvd"></div>
+        <div class="tr ${t2c}">
+            ${f2 ? `<img class="fl" src="${f2}" alt="${m.team2}" loading="lazy" onerror="this.style.visibility='hidden'">` : '<div class="fl"></div>'}
+            <span class="nm">${m.team2 || 'TBD'}</span>
+            <div class="sb">${p2}<span class="fs">${s2}</span></div>
+        </div>
+        ${exH}
+    </div>`;
+}
+
+/* ══════════════════════════════════════════════════════════
+   BRACKET BUILDER
+   
+   Uses nested flex to guarantee alignment:
+   
+   A "bracket-pair" wraps TWO child slots vertically with a connector.
+   At R32 level, a slot = a single match.
+   At R16 level, a slot = a bracket-pair of 2 R32 matches + the R16 match.
+   At QF level, a slot = a bracket-pair of 2 R16 bracket-pairs + the QF match.
+   etc.
+   
+   This recursive structure ensures every match is perfectly centered
+   between its two feeder matches.
+   ══════════════════════════════════════════════════════════ */
+
+function buildHalf(tree, byNum, direction) {
+    // direction: 'right' (left bracket, lines point right) or 'left' (right bracket, lines point left)
+    const dir = direction === 'right' ? 'dir-r' : 'dir-l';
+
+    // Build a single match card cell with optional round label
+    function matchCell(num, opts = {}) {
+        const lbl = opts.roundLabel ? `<div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.2);text-align:center;margin-bottom:4px;">${opts.roundLabel}</div>` : '';
+        return `<div class="mslot"><div>${lbl}${card(byNum[num] || null, opts)}</div></div>`;
+    }
+
+    // Build R16 bracket-pair: 2 R32 matches → connector → 1 R16 match
+    function buildR16Group(r16node, isFirst) {
+        // r16node = { num, r32: [num1, num2] }
+        const [a, b] = r16node.r32;
+        const r32Lbl = isFirst ? 'Round of 32' : '';
+        const r16Lbl = isFirst ? 'Round of 16' : '';
+        if (direction === 'right') {
+            return `
+            <div style="display:flex;align-items:stretch;flex:1;">
+                <div style="display:flex;flex-direction:column;flex:0 0 auto;">
+                    ${matchCell(a, { roundLabel: r32Lbl })}
+                    ${matchCell(b)}
+                </div>
+                <div style="flex:0 0 32px;display:flex;flex-direction:column;">
+                    <div class="conn-pair ${dir}" style="flex:1;"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;flex:0 0 auto;justify-content:center;">
+                    ${matchCell(r16node.num, { roundLabel: r16Lbl })}
+                </div>
+            </div>`;
+        } else {
+            return `
+            <div style="display:flex;align-items:stretch;flex:1;">
+                <div style="display:flex;flex-direction:column;flex:0 0 auto;justify-content:center;">
+                    ${matchCell(r16node.num, { roundLabel: r16Lbl })}
+                </div>
+                <div style="flex:0 0 32px;display:flex;flex-direction:column;">
+                    <div class="conn-pair ${dir}" style="flex:1;"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;flex:0 0 auto;">
+                    ${matchCell(a, { roundLabel: r32Lbl })}
+                    ${matchCell(b)}
+                </div>
+            </div>`;
+        }
+    }
+
+    // Build QF bracket-pair: 2 R16 groups → connector → 1 QF match
+    function buildQFGroup(qfnode, isFirst) {
+        // qfnode = { num, r16: [r16node1, r16node2] }
+        const [r16a, r16b] = qfnode.r16;
+        const qfLbl = isFirst ? 'Quarter-Finals' : '';
+        if (direction === 'right') {
+            return `
+            <div style="display:flex;align-items:stretch;flex:1;">
+                <div style="display:flex;flex-direction:column;flex:1 1 0;">
+                    ${buildR16Group(r16a, isFirst)}
+                    ${buildR16Group(r16b)}
+                </div>
+                <div style="flex:0 0 32px;display:flex;flex-direction:column;">
+                    <div class="conn-pair ${dir}" style="flex:1;"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;flex:0 0 auto;justify-content:center;">
+                    ${matchCell(qfnode.num, { roundLabel: qfLbl })}
+                </div>
+            </div>`;
+        } else {
+            return `
+            <div style="display:flex;align-items:stretch;flex:1;">
+                <div style="display:flex;flex-direction:column;flex:0 0 auto;justify-content:center;">
+                    ${matchCell(qfnode.num, { roundLabel: qfLbl })}
+                </div>
+                <div style="flex:0 0 32px;display:flex;flex-direction:column;">
+                    <div class="conn-pair ${dir}" style="flex:1;"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;flex:1 1 0;">
+                    ${buildR16Group(r16a, isFirst)}
+                    ${buildR16Group(r16b)}
+                </div>
+            </div>`;
+        }
+    }
+
+    // Build SF: 2 QF groups → connector → 1 SF match
+    const [qf1, qf2] = tree.qf;
+    if (direction === 'right') {
+        return `
+        <div style="display:flex;align-items:stretch;flex:1;">
+            <div style="display:flex;flex-direction:column;flex:1 1 0;">
+                ${buildQFGroup(qf1, true)}
+                ${buildQFGroup(qf2)}
+            </div>
+            <div style="flex:0 0 32px;display:flex;flex-direction:column;">
+                <div class="conn-pair ${dir}" style="flex:1;"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;flex:0 0 auto;justify-content:center;">
+                ${matchCell(tree.sf, { roundLabel: 'Semi-Finals' })}
+            </div>
+        </div>`;
+    } else {
+        return `
+        <div style="display:flex;align-items:stretch;flex:1;">
+            <div style="display:flex;flex-direction:column;flex:0 0 auto;justify-content:center;">
+                ${matchCell(tree.sf, { roundLabel: 'Semi-Finals' })}
+            </div>
+            <div style="flex:0 0 32px;display:flex;flex-direction:column;">
+                <div class="conn-pair ${dir}" style="flex:1;"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;flex:1 1 0;">
+                ${buildQFGroup(qf1, true)}
+                ${buildQFGroup(qf2)}
+            </div>
+        </div>`;
+    }
+}
+
+function buildFinalCol(byNum) {
+    return `
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:0 0 auto;gap:24px;padding:0 4px;">
+        <div>
+            <div class="rhdr gold">Final</div>
+            ${card(byNum[FINAL_NUM] || null, { isFinal: true })}
+        </div>
+        <div>
+            <div class="rhdr">3rd Place</div>
+            ${card(byNum[THIRD_NUM] || null, { isThird: true })}
+        </div>
+    </div>`;
+}
+
+/* (headers are integrated into the bracket structure) */
+
+/* ══════ RENDER VIEW ══════ */
+function buildView(byNum, container, mode) {
+    let html = '<div class="bracket-scroll">';
+
+    // BRACKET BODY
+    html += '<div style="display:flex;align-items:stretch;min-height:820px;">';
+
+    if (mode === 'full') {
+        html += buildHalf(LEFT, byNum, 'right');
+        html += `<div style="flex:0 0 32px;display:flex;flex-direction:column;">
+                    <div class="conn-pair dir-r single" style="flex:1;"></div>
+                 </div>`;
+        html += buildFinalCol(byNum);
+        html += `<div style="flex:0 0 32px;display:flex;flex-direction:column;">
+                    <div class="conn-pair dir-l single" style="flex:1;"></div>
+                 </div>`;
+        html += buildHalf(RIGHT, byNum, 'left');
+    } else if (mode === 'left') {
+        html += buildHalf(LEFT, byNum, 'right');
+        html += `<div style="flex:0 0 32px;display:flex;flex-direction:column;">
+                    <div class="conn-pair dir-r single" style="flex:1;"></div>
+                 </div>`;
+        html += `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:0 0 auto;padding:0 4px;">
+                    ${card(byNum[FINAL_NUM] || null, { isFinal: true })}
+                 </div>`;
+    } else {
+        html += `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:0 0 auto;padding:0 4px;">
+                    ${card(byNum[FINAL_NUM] || null, { isFinal: true })}
+                 </div>`;
+        html += `<div style="flex:0 0 32px;display:flex;flex-direction:column;">
+                    <div class="conn-pair dir-l single" style="flex:1;"></div>
+                 </div>`;
+        html += buildHalf(RIGHT, byNum, 'left');
+    }
+
+    html += '</div></div>';
+    container.innerHTML = html;
+}
+
+/* ══════ TABS ══════ */
+document.querySelectorAll('.tab').forEach(b => {
+    b.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+        document.querySelectorAll('.bv').forEach(x => x.classList.add('hidden'));
+        const id = b.dataset.v === 'full' ? 'vFull' : (b.dataset.v === 'left' ? 'vLeft' : 'vRight');
+        document.getElementById(id).classList.remove('hidden');
+    });
+});
+
+/* ══════ LOAD ══════ */
+async function load() {
+    const ld = document.getElementById('ld');
+    const er = document.getElementById('err');
+    const ar = document.getElementById('area');
+    ld.classList.remove('hidden'); er.classList.add('hidden'); ar.classList.add('hidden');
+
+    try {
+        const r = await fetch(DATA_URL);
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const data = await r.json();
+
+        // Index knockout matches by "num"
+        const koRounds = new Set([
+            'Round of 32','Round of 16',
+            'Quarter-final','Quarterfinals',
+            'Semi-final','Semifinals',
+            'Third Place','Match for third place',
+            'Final'
+        ]);
+        const byNum = {};
+        data.matches.forEach(m => {
+            if (koRounds.has(m.round) && m.num) {
+                byNum[m.num] = m;
+            }
+        });
+
+        buildView(byNum, document.getElementById('vFull'), 'full');
+        buildView(byNum, document.getElementById('vLeft'), 'left');
+        buildView(byNum, document.getElementById('vRight'), 'right');
+
+        ld.classList.add('hidden');
+        ar.classList.remove('hidden');
+    } catch (e) {
+        ld.classList.add('hidden');
+        er.classList.remove('hidden');
+        document.getElementById('errmsg').textContent = e.message;
+    }
+}
+
+load();
+</script>
+</body>
+</html>
