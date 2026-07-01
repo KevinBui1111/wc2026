@@ -33,7 +33,7 @@ The single-page HTML application includes:
 
 ---
 
-# Update
+# Update by prompt `2-correct-order.prompt`
 
 ## What was fixed
 The core problem: The previous version used a naive split(matches) approach — simply cutting the array in half by index position. This meant R16 match #90 (whose feeder matches are R32 #73 and #75) could end up positioned next to completely unrelated R32 matches.
@@ -56,3 +56,43 @@ Instead of flat columns with flex:1 spacing (which breaks alignment), the bracke
 
 ## Connector lines using CSS ::before/::after
 Pure CSS bracket lines (no SVG) — a bracket-shaped border connects each pair of matches to the next round, with both left-pointing and right-pointing variants.
+
+---
+
+# Update by prompt `3-manul-score.prompt`
+
+## Changes Made
+### 1. ⏰ Match Time Display
+- Updated the fdt(d, t) function to accept a second parameter for the time string
+- The card now reads m.time from the JSON data (e.g. "16:30 UTC-4") and displays it after the date separated by ·
+- Example display: "Sun, Jun 29 · 16:30 UTC-4"
+
+### 2. 🌲 Dark Green Color Scheme
+Replaced all purple/violet (rgba(139,92,246,...), #8b5cf6) references with dark green (rgba(22,163,74,...), #16a34a):
+
+- Background gradient: deep forest green (#040d04 → #0a1f0a → #071510)
+- Connector bracket lines: green-tinted
+- Card hover glow: green shadow
+- Tab buttons: green active state / green hover borders
+- Spinner: green top-border
+- Scrollbar thumb: green
+- Header text gradient: green-400 → emerald-300 → amber-400
+- Modal styling: dark green gradient background, green border, green focus rings
+- Third-place card: green tint instead of purple
+
+### 3. ✏️ Manual Score Input + Auto-Propagation
+This is the largest feature addition:
+
+- Editable match cards: Any card with both teams known shows a yellow ✏️ Click to enter score hint and gets a yellow-glow cursor on hover
+- Score modal: Clicking opens a dark-green modal with:
+  - Team flags and names
+  - Number inputs for each team's score
+  - Save, Cancel, and Clear Score buttons
+  - Keyboard support (Enter to save, Escape to cancel)
+- WINNER_MAP: A complete mapping of all 32 matches defining where each winner propagates (e.g., W73 → M90.team1, W74 → M89.team1, etc.)
+- LOSER_MAP: Semi-final losers propagate to 3rd-place match (#103)
+- propagateWinner(): When a score is saved, the winner's name and flag are automatically placed into the correct team slot of the next round's match
+- clearDownstream(): If a score is changed/cleared, all downstream teams and scores are recursively cleared to prevent stale data
+- renderAll(): Processes all matches in order (R32 → R16 → QF → SF → Final) to ensure the full bracket chain is always consistent
+- Manual scores persist across re-renders and are marked with a small ✏️ icon
+- Clear Score button removes a manual entry and cascades the clearing downstream
