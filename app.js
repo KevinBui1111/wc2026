@@ -299,9 +299,7 @@ function card(m, opts = {}) {
   const p1 = pen ? `<span class="ps">(${pen[0]})</span>` : '';
   const p2 = pen ? `<span class="ps">(${pen[1]})</span>` : '';
   const exH = extra === 'aet'
-    ? '<div class="exinfo aet">After Extra Time</div>'
-    : extra === 'pen'
-      ? '<div class="exinfo pen">Penalties</div>' : '';
+    ? '<div class="exinfo aet">After Extra Time</div>' : '';
   const mn = m.num ? `<span class="mnum">#${m.num}</span>` : '';
   const vn = m.ground || '';
   const dateTimeStr = fdt(m.date, m.time);
@@ -310,8 +308,7 @@ function card(m, opts = {}) {
   const editCls = isEditable ? 'editable' : '';
   const editClick = isEditable && m.num
     ? ` onclick="openModal(${m.num})"` : '';
-  const editHint = (isEditable && !ft)
-    ? '<div class="edit-hint">✏️ Click to enter score</div>' : '';
+  const editHint = '';
   const manualBadge = m._manual
     ? '<span class="manual-badge">✏️</span>' : '';
 

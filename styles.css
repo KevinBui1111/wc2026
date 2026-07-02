@@ -37,17 +37,17 @@
   --yellow-50: rgba(var(--yellow), .5);
 
   /* composite: red */
-  --red-15: rgba(var(--red), .15);
-  --red-25: rgba(var(--red), .25);
   --red-55: rgba(var(--red), .55);
-  --red-70: rgba(var(--red), .7);
 
   /* composite: white */
+  --w02: rgba(var(--white), .02);
+  --w03: rgba(var(--white), .03);
   --w04: rgba(var(--white), .04);
   --w06: rgba(var(--white), .06);
   --w065: rgba(var(--white), .065);
   --w07: rgba(var(--white), .07);
   --w08: rgba(var(--white), .08);
+  --w14: rgba(var(--white), .14);
   --w15: rgba(var(--white), .15);
   --w28: rgba(var(--white), .35);
   --w50: rgba(var(--white), .5);
