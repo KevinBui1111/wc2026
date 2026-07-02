@@ -60,7 +60,7 @@
   --b65: rgba(var(--black), .65);
 
   /* layout */
-  --card-w: 240px;
+  --card-w: 160px;
   --conn-w: 32px;
   --radius: 10px;
   --radius-lg: 16px;
@@ -98,6 +98,7 @@ body {
   display: flex;
   align-items: stretch;
   flex: 1;
+  padding: 10px 0px;
 }
 
 .fx-col {
@@ -131,7 +132,6 @@ body {
   align-items: center;
   justify-content: center;
   padding: 4px 0;
-  min-height: 88px;
 }
 
 .final-col {
@@ -323,7 +323,7 @@ body {
   border-radius: 2px;
   object-fit: cover;
   flex-shrink: 0;
-  box-shadow: 0 1px 3px rgba(var(--black), .35);
+  box-shadow: 0 1px 3px var(--b35);
   background: var(--w04);
 }
 
@@ -374,7 +374,7 @@ body {
 }
 
 .exinfo.aet { color: var(--gold-55); }
-.exinfo.pen { color: rgba(var(--red), .55); }
+.exinfo.pen { color: var(--red-55); }
 
 .champ {
   position: absolute;
@@ -393,7 +393,7 @@ body {
 .edit-hint {
   text-align: center;
   font-size: 7px;
-  color: rgba(var(--yellow), .35);
+  color: var(--yellow-35);
   padding: 0 0 4px;
   font-weight: 700;
   letter-spacing: .6px;
@@ -420,7 +420,7 @@ body {
   font-size: 11px;
   font-weight: 700;
   color: var(--w50);
-  background: rgba(var(--white), .03);
+  background: var(--w03);
   border: 1px solid var(--w07);
   cursor: pointer;
   transition: var(--transition);
@@ -428,14 +428,14 @@ body {
 
 .tab:hover {
   color: #fff;
-  border-color: rgba(var(--green), .4);
+  border-color: var(--green-40);
 }
 
 .tab.on {
-  background: rgba(var(--green), .2);
+  background: var(--green-20);
   color: #fff;
   border-color: var(--green-45);
-  box-shadow: 0 0 16px rgba(var(--green), .12);
+  box-shadow: 0 0 16px var(--green-12);
 }
 
 /* ───── SPINNER ───── */
@@ -463,7 +463,7 @@ body {
 
 /* ───── SCROLLBAR ───── */
 ::-webkit-scrollbar { height: 5px; }
-::-webkit-scrollbar-track { background: rgba(var(--white), .02); }
+::-webkit-scrollbar-track { background: var(--w02); }
 ::-webkit-scrollbar-thumb { background: var(--green-30); border-radius: 3px; }
 
 /* ───── SCORE MODAL ───── */
@@ -471,7 +471,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: rgba(var(--black), .65);
+  background: var(--b65);
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
@@ -493,7 +493,7 @@ body {
   padding: 24px 28px;
   width: 340px;
   max-width: 92vw;
-  box-shadow: 0 24px 64px rgba(var(--black), .5);
+  box-shadow: 0 24px 64px var(--b50);
 }
 
 .modal h3 {
@@ -518,7 +518,7 @@ body {
   height: 20px;
   border-radius: 3px;
   object-fit: cover;
-  box-shadow: 0 1px 4px rgba(var(--black), .4);
+  box-shadow: 0 1px 4px var(--b40);
 }
 
 .modal-team .m-name {
@@ -581,7 +581,7 @@ body {
 }
 
 .btn-cancel:hover {
-  background: rgba(var(--white), .14);
+  background: var(--w14);
   color: #fff;
 }
 

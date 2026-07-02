@@ -2,10 +2,10 @@
 const DATA_URL =
   'https://raw.githubusercontent.com/openfootball/worldcup.json/refs/heads/master/2026/worldcup.json';
 const FLAG_BASE = 'https://flagcdn.com/w40/';
-const DISPLAY_TZ = 7;               // UTC+7 (Vietnam time)
-const DISPLAY_TZ_LABEL = 'VN';      // label shown next to time
-const MIN_MATCH = 73;               // first knockout match number
-const MAX_MATCH = 104;              // last knockout match number
+const DISPLAY_TZ = 7;
+const DISPLAY_TZ_LABEL = 'VN';
+const MIN_MATCH = 73;
+const MAX_MATCH = 104;
 const FINAL_NUM = 104;
 const THIRD_NUM = 103;
 
@@ -44,7 +44,6 @@ const RIGHT = {
    WINNER / LOSER PROPAGATION MAP
    ══════════════════════════════════════════════════════════ */
 const WINNER_MAP = {
-  // R32 → R16
   73: { m: 90, s: 'team1' }, 74: { m: 89, s: 'team1' },
   75: { m: 90, s: 'team2' }, 76: { m: 91, s: 'team1' },
   77: { m: 89, s: 'team2' }, 78: { m: 91, s: 'team2' },
@@ -53,15 +52,12 @@ const WINNER_MAP = {
   83: { m: 93, s: 'team1' }, 84: { m: 93, s: 'team2' },
   85: { m: 96, s: 'team1' }, 86: { m: 95, s: 'team1' },
   87: { m: 96, s: 'team2' }, 88: { m: 95, s: 'team2' },
-  // R16 → QF
   89: { m: 97, s: 'team1' }, 90: { m: 97, s: 'team2' },
   91: { m: 99, s: 'team1' }, 92: { m: 99, s: 'team2' },
   93: { m: 98, s: 'team1' }, 94: { m: 98, s: 'team2' },
   95: { m: 100, s: 'team1' }, 96: { m: 100, s: 'team2' },
-  // QF → SF
   97: { m: 101, s: 'team1' }, 98: { m: 101, s: 'team2' },
   99: { m: 102, s: 'team1' }, 100: { m: 102, s: 'team2' },
-  // SF → Final
   101: { m: 104, s: 'team1' }, 102: { m: 104, s: 'team2' },
 };
 
@@ -136,20 +132,15 @@ function flg(t) {
   return c ? FLAG_BASE + c + '.png' : '';
 }
 
-/* ══════ TIME CONVERSION ══════
-   Input format: "16:30 UTC-4" or "12:00 UTC-7"
-   Converts to DISPLAY_TZ (UTC+7) and returns "HH:MM"
-   ══════════════════════════════════════════════════════════ */
+/* ══════ TIME CONVERSION ══════ */
 function convertToLocalTime(timeStr) {
   if (!timeStr) return '';
   const match = timeStr.match(/^(\d{1,2}):(\d{2})\s*UTC([+-]\d+)$/);
-  if (!match) return timeStr; // return as-is if format unrecognised
+  if (!match) return timeStr;
   let hours = parseInt(match[1]);
   const minutes = match[2];
   const srcOffset = parseInt(match[3]);
-  // Convert to UTC then to display TZ
   hours = hours - srcOffset + DISPLAY_TZ;
-  // Normalise to 0-23
   hours = ((hours % 24) + 24) % 24;
   return String(hours).padStart(2, '0') + ':' + minutes;
 }
@@ -167,8 +158,8 @@ function fdt(dateStr, timeStr) {
 }
 
 /* ══════ GLOBAL STATE ══════ */
-let byNum = {};            // all knockout matches keyed by num
-let manualScores = {};     // user-entered scores: { matchNum: {s1, s2} }
+let byNum = {};
+let manualScores = {};
 
 /* ══════ MATCH HELPERS ══════ */
 function winner(m) {
@@ -192,7 +183,6 @@ function loser(m) {
 }
 
 function canEdit(m) {
-  // editable if both teams are known
   return m && m.team1 && m.team2 && m.team1 !== 'TBD' && m.team2 !== 'TBD';
 }
 
@@ -203,16 +193,12 @@ function propagateWinner(matchNum) {
   const w = winner(m);
   const l = loser(m);
 
-  // Propagate winner
   const wt = WINNER_MAP[matchNum];
   if (wt) {
     ensureMatch(wt.m);
     const old = byNum[wt.m][wt.s];
     byNum[wt.m][wt.s] = w || null;
-    // If team changed, clear that downstream match's score and cascade
-    if (old !== byNum[wt.m][wt.s]) {
-      clearDownstream(wt.m);
-    }
+    if (old !== byNum[wt.m][wt.s]) clearDownstream(wt.m);
   }
 
   const lt = LOSER_MAP[matchNum];
@@ -220,9 +206,7 @@ function propagateWinner(matchNum) {
     ensureMatch(lt.m);
     const old = byNum[lt.m][lt.s];
     byNum[lt.m][lt.s] = l || null;
-    if (old !== byNum[lt.m][lt.s]) {
-      clearDownstream(lt.m);
-    }
+    if (old !== byNum[lt.m][lt.s]) clearDownstream(lt.m);
   }
 }
 
@@ -247,7 +231,6 @@ function getRoundName(num) {
 }
 
 function clearDownstream(matchNum) {
-  // Remove manual score for this match
   delete manualScores[matchNum];
   const m = byNum[matchNum];
   if (m && m._manual) {
