@@ -1,5 +1,13 @@
+/* ══════ CONFIGURATION ══════ */
 const DATA_URL =
   'https://raw.githubusercontent.com/openfootball/worldcup.json/refs/heads/master/2026/worldcup.json';
+const FLAG_BASE = 'https://flagcdn.com/w40/';
+const DISPLAY_TZ = 7;               // UTC+7 (Vietnam time)
+const DISPLAY_TZ_LABEL = 'VN';      // label shown next to time
+const CONN_W = '32px';              // connector column width
+const CARD_W = '240px';             // match card width (mirrors CSS --card-w)
+const MIN_MATCH = 73;               // first knockout match number
+const MAX_MATCH = 104;              // last knockout match number
 
 /* ══════════════════════════════════════════════════════════
    OFFICIAL BRACKET TREE  (from FIFA / openfootball)
@@ -65,6 +73,15 @@ const LOSER_MAP = {
   102: { m: 103, s: 'team2' },
 };
 
+/* ══════ KNOCKOUT ROUND NAMES (for data filtering) ══════ */
+const KO_ROUNDS = new Set([
+  'Round of 32', 'Round of 16',
+  'Quarter-final', 'Quarterfinals',
+  'Semi-final', 'Semifinals',
+  'Third Place', 'Match for third place',
+  'Final',
+]);
+
 /* ══════ FLAGS ══════ */
 const CC = {
   'Mexico': 'mx', 'South Africa': 'za', 'South Korea': 'kr',
@@ -106,19 +123,50 @@ const CC = {
   'Gabon': 'ga',
 };
 
+/* ══════ SHORT DISPLAY NAMES ══════ */
+const DISPLAY_NAMES = {
+  'Bosnia & Herzegovina': 'Bosnia & Herz.',
+};
+
+function displayName(team) {
+  if (!team) return 'TBD';
+  return DISPLAY_NAMES[team] || team;
+}
+
 function flg(t) {
   if (!t || t === 'TBD') return '';
   const c = CC[t];
-  return c ? `https://flagcdn.com/w40/${c}.png` : '';
+  return c ? FLAG_BASE + c + '.png' : '';
 }
 
-function fdt(d, t) {
-  if (!d) return 'TBD';
-  const x = new Date(d + 'T12:00:00Z');
-  let str = x.toLocaleDateString('en-US', {
+/* ══════ TIME CONVERSION ══════
+   Input format: "16:30 UTC-4" or "12:00 UTC-7"
+   Converts to DISPLAY_TZ (UTC+7) and returns "HH:MM"
+   ══════════════════════════════════════════════════════════ */
+function convertToLocalTime(timeStr) {
+  if (!timeStr) return '';
+  const match = timeStr.match(/^(\d{1,2}):(\d{2})\s*UTC([+-]\d+)$/);
+  if (!match) return timeStr; // return as-is if format unrecognised
+  let hours = parseInt(match[1]);
+  const minutes = match[2];
+  const srcOffset = parseInt(match[3]);
+  // Convert to UTC then to display TZ
+  hours = hours - srcOffset + DISPLAY_TZ;
+  // Normalise to 0-23
+  hours = ((hours % 24) + 24) % 24;
+  return String(hours).padStart(2, '0') + ':' + minutes;
+}
+
+function fdt(dateStr, timeStr) {
+  if (!dateStr) return 'TBD';
+  const d = new Date(dateStr + 'T12:00:00Z');
+  let str = d.toLocaleDateString('en-US', {
     weekday: 'short', month: 'short', day: 'numeric',
   });
-  if (t) str += ' · ' + t;
+  if (timeStr) {
+    const local = convertToLocalTime(timeStr);
+    str += ' · ' + local + ' ' + DISPLAY_TZ_LABEL;
+  }
   return str;
 }
 
@@ -197,8 +245,8 @@ function getRoundName(num) {
   if (num >= 89 && num <= 96) return 'Round of 16';
   if (num >= 97 && num <= 100) return 'Quarter-final';
   if (num === 101 || num === 102) return 'Semi-final';
-  if (num === 103) return 'Match for third place';
-  if (num === 104) return 'Final';
+  if (num === THIRD_NUM) return 'Match for third place';
+  if (num === FINAL_NUM) return 'Final';
   return '';
 }
 
@@ -224,10 +272,27 @@ function clearDownstream(matchNum) {
   }
 }
 
+/* ══════ REUSABLE HTML FRAGMENTS ══════ */
+const CONN_STYLE = `flex:0 0 ${CONN_W};display:flex;flex-direction:column;`;
+const FLEX_STRETCH = 'display:flex;align-items:stretch;flex:1;';
+const FLEX_COL_AUTO = 'display:flex;flex-direction:column;flex:0 0 auto;';
+const FLEX_COL_GROW = 'display:flex;flex-direction:column;flex:1 1 0;';
+const FLEX_COL_CENTER = FLEX_COL_AUTO + 'justify-content:center;';
+const ROUND_LABEL_STYLE = 'font-size:8px;font-weight:700;text-transform:uppercase;'
+  + 'letter-spacing:1.5px;color:rgba(255,255,255,.2);text-align:center;margin-bottom:4px;';
+const MANUAL_BADGE_STYLE = 'font-size:6px;color:rgba(250,204,21,.4);margin-left:3px;';
+
+function flagImg(url, alt) {
+  return url
+    ? `<img class="fl" src="${url}" alt="${alt || ''}" `
+      + 'loading="lazy" onerror="this.style.visibility=\'hidden\'">'
+    : '<div class="fl"></div>';
+}
+
 /* ══════ CARD HTML ══════ */
 function card(m, opts = {}) {
   if (!m) {
-    return '<div class="mc" style="width:240px;text-align:center;'
+    return `<div class="mc" style="width:${CARD_W};text-align:center;`
       + 'padding:20px 8px;color:rgba(255,255,255,.12);font-size:11px;'
       + 'font-weight:600;">Match TBD</div>';
   }
@@ -257,8 +322,7 @@ function card(m, opts = {}) {
       ? '<div class="exinfo pen">Penalties</div>' : '';
   const mn = m.num ? `<span class="mnum">#${m.num}</span>` : '';
   const vn = m.ground || '';
-  const timeStr = m.time || '';
-  const dateTimeStr = fdt(m.date, timeStr);
+  const dateTimeStr = fdt(m.date, m.time);
 
   const isEditable = canEdit(m);
   const editCls = isEditable ? 'editable' : '';
@@ -267,13 +331,10 @@ function card(m, opts = {}) {
   const editHint = (isEditable && !ft)
     ? '<div class="edit-hint">✏️ Click to enter score</div>' : '';
   const manualBadge = m._manual
-    ? '<span style="font-size:6px;color:rgba(250,204,21,.4);'
-      + 'margin-left:3px;">✏️</span>' : '';
+    ? `<span style="${MANUAL_BADGE_STYLE}">✏️</span>` : '';
 
-  const flagImg = (url, alt) => url
-    ? `<img class="fl" src="${url}" alt="${alt || ''}" `
-      + `loading="lazy" onerror="this.style.visibility='hidden'">`
-    : '<div class="fl"></div>';
+  const name1 = displayName(m.team1);
+  const name2 = displayName(m.team2);
 
   return `<div class="mc ${cls} ${editCls}"${editClick}>
   ${badge}
@@ -281,13 +342,13 @@ function card(m, opts = {}) {
   ${vn ? `<div class="venue" title="${vn}">📍 ${vn}</div>` : ''}
   <div class="tr ${t1c}">
     ${flagImg(f1, m.team1)}
-    <span class="nm">${m.team1 || 'TBD'}</span>
+    <span class="nm">${name1}</span>
     <div class="sb">${p1}<span class="fs">${s1}</span></div>
   </div>
   <div class="dvd"></div>
   <div class="tr ${t2c}">
     ${flagImg(f2, m.team2)}
-    <span class="nm">${m.team2 || 'TBD'}</span>
+    <span class="nm">${name2}</span>
     <div class="sb">${p2}<span class="fs">${s2}</span></div>
   </div>
   ${exH}
@@ -303,11 +364,15 @@ function buildHalf(tree, direction) {
 
   function matchCell(num, opts = {}) {
     const lbl = opts.roundLabel
-      ? '<div style="font-size:8px;font-weight:700;text-transform:uppercase;'
-        + 'letter-spacing:1.5px;color:rgba(255,255,255,.2);text-align:center;'
-        + `margin-bottom:4px;">${opts.roundLabel}</div>`
+      ? `<div style="${ROUND_LABEL_STYLE}">${opts.roundLabel}</div>`
       : '';
     return `<div class="mslot"><div>${lbl}${card(byNum[num] || null, opts)}</div></div>`;
+  }
+
+  function connPair() {
+    return `<div style="${CONN_STYLE}">
+    <div class="conn-pair ${dir}" style="flex:1;"></div>
+  </div>`;
   }
 
   function buildR16Group(r16node, isFirst) {
@@ -315,27 +380,23 @@ function buildHalf(tree, direction) {
     const r32L = isFirst ? 'Round of 32' : '';
     const r16L = isFirst ? 'Round of 16' : '';
     if (direction === 'right') {
-      return `<div style="display:flex;align-items:stretch;flex:1;">
-  <div style="display:flex;flex-direction:column;flex:0 0 auto;">
+      return `<div style="${FLEX_STRETCH}">
+  <div style="${FLEX_COL_AUTO}">
     ${matchCell(a, { roundLabel: r32L })}
     ${matchCell(b)}
   </div>
-  <div style="flex:0 0 32px;display:flex;flex-direction:column;">
-    <div class="conn-pair ${dir}" style="flex:1;"></div>
-  </div>
-  <div style="display:flex;flex-direction:column;flex:0 0 auto;justify-content:center;">
+  ${connPair()}
+  <div style="${FLEX_COL_CENTER}">
     ${matchCell(r16node.num, { roundLabel: r16L })}
   </div>
 </div>`;
     }
-    return `<div style="display:flex;align-items:stretch;flex:1;">
-  <div style="display:flex;flex-direction:column;flex:0 0 auto;justify-content:center;">
+    return `<div style="${FLEX_STRETCH}">
+  <div style="${FLEX_COL_CENTER}">
     ${matchCell(r16node.num, { roundLabel: r16L })}
   </div>
-  <div style="flex:0 0 32px;display:flex;flex-direction:column;">
-    <div class="conn-pair ${dir}" style="flex:1;"></div>
-  </div>
-  <div style="display:flex;flex-direction:column;flex:0 0 auto;">
+  ${connPair()}
+  <div style="${FLEX_COL_AUTO}">
     ${matchCell(a, { roundLabel: r32L })}
     ${matchCell(b)}
   </div>
@@ -346,27 +407,23 @@ function buildHalf(tree, direction) {
     const [r16a, r16b] = qfnode.r16;
     const qfL = isFirst ? 'Quarter-Finals' : '';
     if (direction === 'right') {
-      return `<div style="display:flex;align-items:stretch;flex:1;">
-  <div style="display:flex;flex-direction:column;flex:1 1 0;">
+      return `<div style="${FLEX_STRETCH}">
+  <div style="${FLEX_COL_GROW}">
     ${buildR16Group(r16a, isFirst)}
     ${buildR16Group(r16b)}
   </div>
-  <div style="flex:0 0 32px;display:flex;flex-direction:column;">
-    <div class="conn-pair ${dir}" style="flex:1;"></div>
-  </div>
-  <div style="display:flex;flex-direction:column;flex:0 0 auto;justify-content:center;">
+  ${connPair()}
+  <div style="${FLEX_COL_CENTER}">
     ${matchCell(qfnode.num, { roundLabel: qfL })}
   </div>
 </div>`;
     }
-    return `<div style="display:flex;align-items:stretch;flex:1;">
-  <div style="display:flex;flex-direction:column;flex:0 0 auto;justify-content:center;">
+    return `<div style="${FLEX_STRETCH}">
+  <div style="${FLEX_COL_CENTER}">
     ${matchCell(qfnode.num, { roundLabel: qfL })}
   </div>
-  <div style="flex:0 0 32px;display:flex;flex-direction:column;">
-    <div class="conn-pair ${dir}" style="flex:1;"></div>
-  </div>
-  <div style="display:flex;flex-direction:column;flex:1 1 0;">
+  ${connPair()}
+  <div style="${FLEX_COL_GROW}">
     ${buildR16Group(r16a, isFirst)}
     ${buildR16Group(r16b)}
   </div>
@@ -375,27 +432,23 @@ function buildHalf(tree, direction) {
 
   const [qf1, qf2] = tree.qf;
   if (direction === 'right') {
-    return `<div style="display:flex;align-items:stretch;flex:1;">
-  <div style="display:flex;flex-direction:column;flex:1 1 0;">
+    return `<div style="${FLEX_STRETCH}">
+  <div style="${FLEX_COL_GROW}">
     ${buildQFGroup(qf1, true)}
     ${buildQFGroup(qf2)}
   </div>
-  <div style="flex:0 0 32px;display:flex;flex-direction:column;">
-    <div class="conn-pair ${dir}" style="flex:1;"></div>
-  </div>
-  <div style="display:flex;flex-direction:column;flex:0 0 auto;justify-content:center;">
+  ${connPair()}
+  <div style="${FLEX_COL_CENTER}">
     ${matchCell(tree.sf, { roundLabel: 'Semi-Finals' })}
   </div>
 </div>`;
   }
-  return `<div style="display:flex;align-items:stretch;flex:1;">
-  <div style="display:flex;flex-direction:column;flex:0 0 auto;justify-content:center;">
+  return `<div style="${FLEX_STRETCH}">
+  <div style="${FLEX_COL_CENTER}">
     ${matchCell(tree.sf, { roundLabel: 'Semi-Finals' })}
   </div>
-  <div style="flex:0 0 32px;display:flex;flex-direction:column;">
-    <div class="conn-pair ${dir}" style="flex:1;"></div>
-  </div>
-  <div style="display:flex;flex-direction:column;flex:1 1 0;">
+  ${connPair()}
+  <div style="${FLEX_COL_GROW}">
     ${buildQFGroup(qf1, true)}
     ${buildQFGroup(qf2)}
   </div>
@@ -403,8 +456,7 @@ function buildHalf(tree, direction) {
 }
 
 function buildFinalCol() {
-  return `<div style="display:flex;flex-direction:column;align-items:center;
-    justify-content:center;flex:0 0 auto;gap:24px;padding:0 4px;">
+  return `<div style="${FLEX_COL_CENTER}gap:24px;padding:0 4px;">
   <div>
     <div class="rhdr gold">Final</div>
     ${card(byNum[FINAL_NUM] || null, { isFinal: true })}
@@ -419,11 +471,7 @@ function buildFinalCol() {
 /* ══════ RENDER ══════ */
 function renderAll() {
   const order = [];
-  for (let i = 73; i <= 88; i++) order.push(i);
-  for (let i = 89; i <= 96; i++) order.push(i);
-  for (let i = 97; i <= 100; i++) order.push(i);
-  order.push(101, 102, 103, 104);
-
+  for (let i = MIN_MATCH; i <= MAX_MATCH; i++) order.push(i);
   order.forEach(num => {
     if (byNum[num]) propagateWinner(num);
   });
@@ -433,16 +481,23 @@ function renderAll() {
   buildView(document.getElementById('vRight'), 'right');
 }
 
+const connR = `<div style="${CONN_STYLE}">
+  <div class="conn-pair dir-r single" style="flex:1;"></div>
+</div>`;
+const connL = `<div style="${CONN_STYLE}">
+  <div class="conn-pair dir-l single" style="flex:1;"></div>
+</div>`;
+
+function finalOnlyCol() {
+  return `<div style="${FLEX_COL_CENTER}padding:0 4px;">
+  <div><div class="rhdr gold">Final</div>
+  ${card(byNum[FINAL_NUM] || null, { isFinal: true })}</div>
+</div>`;
+}
+
 function buildView(container, mode) {
   let html = '<div class="bracket-scroll">';
   html += '<div style="display:flex;align-items:stretch;min-height:820px;">';
-
-  const connR = `<div style="flex:0 0 32px;display:flex;flex-direction:column;">
-    <div class="conn-pair dir-r single" style="flex:1;"></div>
-  </div>`;
-  const connL = `<div style="flex:0 0 32px;display:flex;flex-direction:column;">
-    <div class="conn-pair dir-l single" style="flex:1;"></div>
-  </div>`;
 
   if (mode === 'full') {
     html += buildHalf(LEFT, 'right');
@@ -453,17 +508,9 @@ function buildView(container, mode) {
   } else if (mode === 'left') {
     html += buildHalf(LEFT, 'right');
     html += connR;
-    html += `<div style="display:flex;flex-direction:column;align-items:center;
-      justify-content:center;flex:0 0 auto;padding:0 4px;">
-      <div><div class="rhdr gold">Final</div>
-      ${card(byNum[FINAL_NUM] || null, { isFinal: true })}</div>
-    </div>`;
+    html += finalOnlyCol();
   } else {
-    html += `<div style="display:flex;flex-direction:column;align-items:center;
-      justify-content:center;flex:0 0 auto;padding:0 4px;">
-      <div><div class="rhdr gold">Final</div>
-      ${card(byNum[FINAL_NUM] || null, { isFinal: true })}</div>
-    </div>`;
+    html += finalOnlyCol();
     html += connL;
     html += buildHalf(RIGHT, 'left');
   }
@@ -482,8 +529,8 @@ function openModal(num) {
 
   document.getElementById('modalLabel').textContent =
     `Match #${num} · ${getRoundName(num)}`;
-  document.getElementById('mn1').textContent = m.team1;
-  document.getElementById('mn2').textContent = m.team2;
+  document.getElementById('mn1').textContent = displayName(m.team1);
+  document.getElementById('mn2').textContent = displayName(m.team2);
 
   const f1 = flg(m.team1);
   const f2 = flg(m.team2);
@@ -580,19 +627,11 @@ async function load() {
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const data = await r.json();
 
-    const koRounds = new Set([
-      'Round of 32', 'Round of 16',
-      'Quarter-final', 'Quarterfinals',
-      'Semi-final', 'Semifinals',
-      'Third Place', 'Match for third place',
-      'Final',
-    ]);
-
     byNum = {};
-    for (let i = 73; i <= 104; i++) ensureMatch(i);
+    for (let i = MIN_MATCH; i <= MAX_MATCH; i++) ensureMatch(i);
 
     data.matches.forEach(m => {
-      if (koRounds.has(m.round) && m.num) {
+      if (KO_ROUNDS.has(m.round) && m.num) {
         byNum[m.num] = { ...byNum[m.num], ...m, _manual: false };
       }
     });

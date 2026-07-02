@@ -1,0 +1,3 @@
+- use short name Bosnia & Herz for team Bosnia & Herzegovina
+- show local time (VN time UTC + 7)
+- use variables for values that use multiple times (js and css)

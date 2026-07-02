@@ -1,5 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
+/* ───── CSS VARIABLES ───── */
+:root {
+  --green: 22, 163, 74;
+  --gold: 245, 158, 11;
+  --yellow: 250, 204, 21;
+  --red: 239, 68, 68;
+  --white: 255, 255, 255;
+  --black: 0, 0, 0;
+  --win: 34, 197, 94;
+  --card-w: 240px;
+  --conn-w: 32px;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --transition: all .22s ease;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -41,9 +57,9 @@ body {
   bottom: 25%;
   left: 0;
   width: 50%;
-  border-top: 1.5px solid rgba(22, 163, 74, .3);
-  border-bottom: 1.5px solid rgba(22, 163, 74, .3);
-  border-right: 1.5px solid rgba(22, 163, 74, .3);
+  border-top: 1.5px solid rgba(var(--green), .3);
+  border-bottom: 1.5px solid rgba(var(--green), .3);
+  border-right: 1.5px solid rgba(var(--green), .3);
   border-radius: 0 6px 6px 0;
 }
 
@@ -54,7 +70,7 @@ body {
   transform: translateY(-50%);
   left: 50%;
   width: 50%;
-  border-top: 1.5px solid rgba(22, 163, 74, .3);
+  border-top: 1.5px solid rgba(var(--green), .3);
 }
 
 .conn-pair.dir-l::before {
@@ -64,9 +80,9 @@ body {
   bottom: 25%;
   right: 0;
   width: 50%;
-  border-top: 1.5px solid rgba(22, 163, 74, .3);
-  border-bottom: 1.5px solid rgba(22, 163, 74, .3);
-  border-left: 1.5px solid rgba(22, 163, 74, .3);
+  border-top: 1.5px solid rgba(var(--green), .3);
+  border-bottom: 1.5px solid rgba(var(--green), .3);
+  border-left: 1.5px solid rgba(var(--green), .3);
   border-radius: 6px 0 0 6px;
 }
 
@@ -77,7 +93,7 @@ body {
   transform: translateY(-50%);
   right: 50%;
   width: 50%;
-  border-top: 1.5px solid rgba(22, 163, 74, .3);
+  border-top: 1.5px solid rgba(var(--green), .3);
 }
 
 .conn-pair.dir-r.single::before { display: none; }
@@ -87,36 +103,36 @@ body {
 
 /* ───── MATCH CARD ───── */
 .mc {
-  background: rgba(255, 255, 255, .04);
+  background: rgba(var(--white), .04);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, .08);
-  border-radius: 10px;
-  width: 240px;
+  border: 1px solid rgba(var(--white), .08);
+  border-radius: var(--radius);
+  width: var(--card-w);
   overflow: hidden;
-  transition: all .22s ease;
+  transition: var(--transition);
   position: relative;
 }
 
 .mc:hover {
   transform: translateY(-1px) scale(1.015);
-  box-shadow: 0 8px 28px rgba(22, 163, 74, .18);
-  border-color: rgba(22, 163, 74, .35);
-  background: rgba(255, 255, 255, .065);
+  box-shadow: 0 8px 28px rgba(var(--green), .18);
+  border-color: rgba(var(--green), .35);
+  background: rgba(var(--white), .065);
 }
 
 .mc.final {
-  border-color: rgba(245, 158, 11, .3);
-  background: rgba(245, 158, 11, .035);
+  border-color: rgba(var(--gold), .3);
+  background: rgba(var(--gold), .035);
 }
 
 .mc.final:hover {
-  box-shadow: 0 8px 28px rgba(245, 158, 11, .18);
-  border-color: rgba(245, 158, 11, .5);
+  box-shadow: 0 8px 28px rgba(var(--gold), .18);
+  border-color: rgba(var(--gold), .5);
 }
 
 .mc.third {
-  border-color: rgba(22, 163, 74, .18);
-  background: rgba(22, 163, 74, .025);
+  border-color: rgba(var(--green), .18);
+  background: rgba(var(--green), .025);
 }
 
 .mc.editable {
@@ -124,8 +140,8 @@ body {
 }
 
 .mc.editable:hover {
-  border-color: rgba(250, 204, 21, .5);
-  box-shadow: 0 0 16px rgba(250, 204, 21, .12);
+  border-color: rgba(var(--yellow), .5);
+  box-shadow: 0 0 16px rgba(var(--yellow), .12);
 }
 
 .mc .meta {
@@ -134,11 +150,11 @@ body {
   align-items: center;
   padding: 4px 9px;
   font-size: 8.5px;
-  color: rgba(255, 255, 255, .28);
+  color: rgba(var(--white), .28);
 }
 
 .mc .mnum {
-  background: rgba(255, 255, 255, .06);
+  background: rgba(var(--white), .06);
   padding: 1px 5px;
   border-radius: 4px;
   font-weight: 700;
@@ -148,7 +164,7 @@ body {
 
 .mc .venue {
   font-size: 8px;
-  color: rgba(255, 255, 255, .18);
+  color: rgba(var(--white), .18);
   text-align: center;
   padding: 0 8px 3px;
   white-space: nowrap;
@@ -158,7 +174,7 @@ body {
 
 .mc .mtime {
   font-size: 8px;
-  color: rgba(255, 255, 255, .22);
+  color: rgba(var(--white), .22);
   font-weight: 600;
 }
 
@@ -171,7 +187,7 @@ body {
   transition: background .15s;
 }
 
-.tr.w { background: rgba(34, 197, 94, .12); }
+.tr.w { background: rgba(var(--win), .12); }
 .tr.l { opacity: .4; }
 
 .tr .fl {
@@ -180,8 +196,8 @@ body {
   border-radius: 2px;
   object-fit: cover;
   flex-shrink: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, .35);
-  background: rgba(255, 255, 255, .04);
+  box-shadow: 0 1px 3px rgba(var(--black), .35);
+  background: rgba(var(--white), .04);
 }
 
 .tr .nm {
@@ -204,7 +220,7 @@ body {
 .tr .ps {
   font-size: 9.5px;
   font-weight: 600;
-  color: rgba(255, 255, 255, .4);
+  color: rgba(var(--white), .4);
 }
 
 .tr .fs {
@@ -217,7 +233,7 @@ body {
 
 .dvd {
   height: 1px;
-  background: rgba(255, 255, 255, .06);
+  background: rgba(var(--white), .06);
   margin: 0 9px;
 }
 
@@ -230,8 +246,8 @@ body {
   padding: 2px 0 4px;
 }
 
-.exinfo.aet { color: rgba(251, 191, 36, .55); }
-.exinfo.pen { color: rgba(248, 113, 113, .55); }
+.exinfo.aet { color: rgba(var(--gold), .55); }
+.exinfo.pen { color: rgba(var(--red), .55); }
 
 .champ {
   position: absolute;
@@ -250,7 +266,7 @@ body {
 .edit-hint {
   text-align: center;
   font-size: 7px;
-  color: rgba(250, 204, 21, .35);
+  color: rgba(var(--yellow), .35);
   padding: 0 0 4px;
   font-weight: 700;
   letter-spacing: .6px;
@@ -263,13 +279,13 @@ body {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 2px;
-  color: rgba(255, 255, 255, .3);
+  color: rgba(var(--white), .3);
   text-align: center;
   padding: 6px 4px 10px;
   white-space: nowrap;
 }
 
-.rhdr.gold { color: #f59e0b; }
+.rhdr.gold { color: rgb(var(--gold)); }
 
 /* ───── TABS ───── */
 .tab {
@@ -277,31 +293,31 @@ body {
   border-radius: 999px;
   font-size: 11px;
   font-weight: 700;
-  color: rgba(255, 255, 255, .4);
-  background: rgba(255, 255, 255, .03);
-  border: 1px solid rgba(255, 255, 255, .07);
+  color: rgba(var(--white), .4);
+  background: rgba(var(--white), .03);
+  border: 1px solid rgba(var(--white), .07);
   cursor: pointer;
-  transition: all .2s;
+  transition: var(--transition);
 }
 
 .tab:hover {
   color: #fff;
-  border-color: rgba(22, 163, 74, .4);
+  border-color: rgba(var(--green), .4);
 }
 
 .tab.on {
-  background: rgba(22, 163, 74, .2);
+  background: rgba(var(--green), .2);
   color: #fff;
-  border-color: rgba(22, 163, 74, .45);
-  box-shadow: 0 0 16px rgba(22, 163, 74, .12);
+  border-color: rgba(var(--green), .45);
+  box-shadow: 0 0 16px rgba(var(--green), .12);
 }
 
 /* ───── SPINNER ───── */
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(255, 255, 255, .07);
-  border-top-color: #16a34a;
+  border: 3px solid rgba(var(--white), .07);
+  border-top-color: rgb(var(--green));
   border-radius: 50%;
   animation: sp .7s linear infinite;
 }
@@ -321,15 +337,15 @@ body {
 
 /* ───── SCROLLBAR ───── */
 ::-webkit-scrollbar { height: 5px; }
-::-webkit-scrollbar-track { background: rgba(255, 255, 255, .02); }
-::-webkit-scrollbar-thumb { background: rgba(22, 163, 74, .3); border-radius: 3px; }
+::-webkit-scrollbar-track { background: rgba(var(--white), .02); }
+::-webkit-scrollbar-thumb { background: rgba(var(--green), .3); border-radius: 3px; }
 
 /* ───── SCORE MODAL ───── */
 .modal-bg {
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: rgba(0, 0, 0, .65);
+  background: rgba(var(--black), .65);
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
@@ -346,12 +362,12 @@ body {
 
 .modal {
   background: linear-gradient(160deg, #0d1f0d, #132613);
-  border: 1px solid rgba(22, 163, 74, .3);
-  border-radius: 16px;
+  border: 1px solid rgba(var(--green), .3);
+  border-radius: var(--radius-lg);
   padding: 24px 28px;
   width: 340px;
   max-width: 92vw;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, .5);
+  box-shadow: 0 24px 64px rgba(var(--black), .5);
 }
 
 .modal h3 {
@@ -361,7 +377,7 @@ body {
   margin-bottom: 18px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: rgba(255, 255, 255, .7);
+  color: rgba(var(--white), .7);
 }
 
 .modal-team {
@@ -376,7 +392,7 @@ body {
   height: 20px;
   border-radius: 3px;
   object-fit: cover;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, .4);
+  box-shadow: 0 1px 4px rgba(var(--black), .4);
 }
 
 .modal-team .m-name {
@@ -389,8 +405,8 @@ body {
   width: 52px;
   padding: 6px 4px;
   text-align: center;
-  background: rgba(255, 255, 255, .08);
-  border: 1px solid rgba(255, 255, 255, .15);
+  background: rgba(var(--white), .08);
+  border: 1px solid rgba(var(--white), .15);
   border-radius: 8px;
   color: #fff;
   font-size: 18px;
@@ -407,12 +423,12 @@ body {
 }
 
 .modal-team input:focus {
-  border-color: rgba(22, 163, 74, .6);
+  border-color: rgba(var(--green), .6);
 }
 
 .modal-sep {
   height: 1px;
-  background: rgba(255, 255, 255, .08);
+  background: rgba(var(--white), .08);
   margin: 2px 0;
 }
 
@@ -429,44 +445,44 @@ body {
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  transition: all .2s;
+  transition: var(--transition);
   border: none;
 }
 
 .btn-cancel {
-  background: rgba(255, 255, 255, .08);
-  color: rgba(255, 255, 255, .5);
+  background: rgba(var(--white), .08);
+  color: rgba(var(--white), .5);
 }
 
 .btn-cancel:hover {
-  background: rgba(255, 255, 255, .14);
+  background: rgba(var(--white), .14);
   color: #fff;
 }
 
 .btn-save {
-  background: rgba(22, 163, 74, .6);
+  background: rgba(var(--green), .6);
   color: #fff;
 }
 
 .btn-save:hover {
-  background: rgba(22, 163, 74, .8);
+  background: rgba(var(--green), .8);
 }
 
 .btn-clear {
-  background: rgba(239, 68, 68, .15);
-  color: rgba(239, 68, 68, .7);
+  background: rgba(var(--red), .15);
+  color: rgba(var(--red), .7);
   font-size: 11px;
   margin-right: auto;
 }
 
 .btn-clear:hover {
-  background: rgba(239, 68, 68, .25);
+  background: rgba(var(--red), .25);
   color: #fff;
 }
 
 .modal-note {
   font-size: 9px;
-  color: rgba(255, 255, 255, .25);
+  color: rgba(var(--white), .25);
   text-align: center;
   margin-top: 10px;
   line-height: 1.4;
@@ -474,7 +490,7 @@ body {
 
 .modal-match-label {
   font-size: 10px;
-  color: rgba(255, 255, 255, .3);
+  color: rgba(var(--white), .3);
   text-align: center;
   margin-bottom: 4px;
   font-weight: 600;
