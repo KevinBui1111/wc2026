@@ -96,3 +96,12 @@ This is the largest feature addition:
 - renderAll(): Processes all matches in order (R32 → R16 → QF → SF → Final) to ensure the full bracket chain is always consistent
 - Manual scores persist across re-renders and are marked with a small ✏️ icon
 - Clear Score button removes a manual entry and cascades the clearing downstream
+
+# Update by prompt `4-separate.prompt.md`
+
+2-Space Indentation
+All three files use consistent 2-space indentation throughout:
+
+- HTML: 2 spaces per nesting level (<body> → 2sp, <header> → 4sp, <div> → 6sp, etc.)
+- CSS: 2 spaces for properties inside rule blocks
+- JS: 2 spaces for all block indentation (functions, if/else, loops, etc.)
