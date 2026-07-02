@@ -2,6 +2,7 @@
 
 /* ───── CSS VARIABLES ───── */
 :root {
+  /* base rgb channels */
   --green: 22, 163, 74;
   --gold: 245, 158, 11;
   --yellow: 250, 204, 21;
@@ -9,11 +10,62 @@
   --white: 255, 255, 255;
   --black: 0, 0, 0;
   --win: 34, 197, 94;
+
+  /* composite: green */
+  --green-02: rgba(var(--green), .025);
+  --green-12: rgba(var(--green), .12);
+  --green-18: rgba(var(--green), .18);
+  --green-20: rgba(var(--green), .2);
+  --green-30: rgba(var(--green), .3);
+  --green-35: rgba(var(--green), .35);
+  --green-40: rgba(var(--green), .4);
+  --green-45: rgba(var(--green), .45);
+  --green-60: rgba(var(--green), .6);
+  --green-80: rgba(var(--green), .8);
+
+  /* composite: gold */
+  --gold-03: rgba(var(--gold), .035);
+  --gold-18: rgba(var(--gold), .18);
+  --gold-30: rgba(var(--gold), .3);
+  --gold-50: rgba(var(--gold), .5);
+  --gold-55: rgba(var(--gold), .55);
+
+  /* composite: yellow */
+  --yellow-12: rgba(var(--yellow), .12);
+  --yellow-35: rgba(var(--yellow), .35);
+  --yellow-40: rgba(var(--yellow), .4);
+  --yellow-50: rgba(var(--yellow), .5);
+
+  /* composite: red */
+  --red-15: rgba(var(--red), .15);
+  --red-25: rgba(var(--red), .25);
+  --red-55: rgba(var(--red), .55);
+  --red-70: rgba(var(--red), .7);
+
+  /* composite: white */
+  --w04: rgba(var(--white), .04);
+  --w06: rgba(var(--white), .06);
+  --w065: rgba(var(--white), .065);
+  --w07: rgba(var(--white), .07);
+  --w08: rgba(var(--white), .08);
+  --w15: rgba(var(--white), .15);
+  --w28: rgba(var(--white), .35);
+  --w50: rgba(var(--white), .5);
+  --w70: rgba(var(--white), .7);
+
+  /* composite: black */
+  --b35: rgba(var(--black), .35);
+  --b40: rgba(var(--black), .4);
+  --b50: rgba(var(--black), .5);
+  --b65: rgba(var(--black), .65);
+
+  /* layout */
   --card-w: 240px;
   --conn-w: 32px;
   --radius: 10px;
   --radius-lg: 16px;
   --transition: all .22s ease;
+  --conn-border: 1.5px solid var(--green-30);
 }
 
 * {
@@ -29,10 +81,47 @@ body {
   color: #fff;
 }
 
-/* ───── BRACKET STRUCTURE ───── */
+/* ───── BRACKET LAYOUT CLASSES ───── */
 .bracket-scroll {
   overflow-x: auto;
   padding: 0 24px 36px;
+}
+
+.bracket-body {
+  display: flex;
+  align-items: stretch;
+  min-height: 820px;
+}
+
+.fx-stretch {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+}
+
+.fx-col {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+}
+
+.fx-col-center {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  justify-content: center;
+}
+
+.fx-col-grow {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+}
+
+.conn-col {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 var(--conn-w);
 }
 
 .mslot {
@@ -44,8 +133,42 @@ body {
   min-height: 88px;
 }
 
+.final-col {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  padding: 0 4px;
+}
+
+.final-only-col {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.round-label {
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--w28);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.manual-badge {
+  font-size: 6px;
+  color: var(--yellow-40);
+  margin-left: 3px;
+}
+
 /* ───── CONNECTORS ───── */
-.conn-pair {
+.conn-col > .conn-pair {
   flex: 1;
   position: relative;
 }
@@ -57,9 +180,9 @@ body {
   bottom: 25%;
   left: 0;
   width: 50%;
-  border-top: 1.5px solid rgba(var(--green), .3);
-  border-bottom: 1.5px solid rgba(var(--green), .3);
-  border-right: 1.5px solid rgba(var(--green), .3);
+  border-top: var(--conn-border);
+  border-bottom: var(--conn-border);
+  border-right: var(--conn-border);
   border-radius: 0 6px 6px 0;
 }
 
@@ -70,7 +193,7 @@ body {
   transform: translateY(-50%);
   left: 50%;
   width: 50%;
-  border-top: 1.5px solid rgba(var(--green), .3);
+  border-top: var(--conn-border);
 }
 
 .conn-pair.dir-l::before {
@@ -80,9 +203,9 @@ body {
   bottom: 25%;
   right: 0;
   width: 50%;
-  border-top: 1.5px solid rgba(var(--green), .3);
-  border-bottom: 1.5px solid rgba(var(--green), .3);
-  border-left: 1.5px solid rgba(var(--green), .3);
+  border-top: var(--conn-border);
+  border-bottom: var(--conn-border);
+  border-left: var(--conn-border);
   border-radius: 6px 0 0 6px;
 }
 
@@ -93,7 +216,7 @@ body {
   transform: translateY(-50%);
   right: 50%;
   width: 50%;
-  border-top: 1.5px solid rgba(var(--green), .3);
+  border-top: var(--conn-border);
 }
 
 .conn-pair.dir-r.single::before { display: none; }
@@ -103,9 +226,9 @@ body {
 
 /* ───── MATCH CARD ───── */
 .mc {
-  background: rgba(var(--white), .04);
+  background: var(--w04);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(var(--white), .08);
+  border: 1px solid var(--w08);
   border-radius: var(--radius);
   width: var(--card-w);
   overflow: hidden;
@@ -115,24 +238,24 @@ body {
 
 .mc:hover {
   transform: translateY(-1px) scale(1.015);
-  box-shadow: 0 8px 28px rgba(var(--green), .18);
-  border-color: rgba(var(--green), .35);
-  background: rgba(var(--white), .065);
+  box-shadow: 0 8px 28px var(--green-18);
+  border-color: var(--green-35);
+  background: var(--w065);
 }
 
 .mc.final {
-  border-color: rgba(var(--gold), .3);
-  background: rgba(var(--gold), .035);
+  border-color: var(--gold-30);
+  background: var(--gold-03);
 }
 
 .mc.final:hover {
-  box-shadow: 0 8px 28px rgba(var(--gold), .18);
-  border-color: rgba(var(--gold), .5);
+  box-shadow: 0 8px 28px var(--gold-18);
+  border-color: var(--gold-50);
 }
 
 .mc.third {
-  border-color: rgba(var(--green), .18);
-  background: rgba(var(--green), .025);
+  border-color: var(--green-18);
+  background: var(--green-02);
 }
 
 .mc.editable {
@@ -140,8 +263,17 @@ body {
 }
 
 .mc.editable:hover {
-  border-color: rgba(var(--yellow), .5);
-  box-shadow: 0 0 16px rgba(var(--yellow), .12);
+  border-color: var(--yellow-50);
+  box-shadow: 0 0 16px var(--yellow-12);
+}
+
+.mc.mc-tbd {
+  width: var(--card-w);
+  text-align: center;
+  padding: 20px 8px;
+  color: var(--w15);
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .mc .meta {
@@ -150,11 +282,11 @@ body {
   align-items: center;
   padding: 4px 9px;
   font-size: 8.5px;
-  color: rgba(var(--white), .28);
+  color: var(--w28);
 }
 
 .mc .mnum {
-  background: rgba(var(--white), .06);
+  background: var(--w06);
   padding: 1px 5px;
   border-radius: 4px;
   font-weight: 700;
@@ -164,18 +296,12 @@ body {
 
 .mc .venue {
   font-size: 8px;
-  color: rgba(var(--white), .18);
+  color: var(--w28);
   text-align: center;
   padding: 0 8px 3px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.mc .mtime {
-  font-size: 8px;
-  color: rgba(var(--white), .22);
-  font-weight: 600;
 }
 
 /* ───── TEAM ROW ───── */
@@ -197,7 +323,7 @@ body {
   object-fit: cover;
   flex-shrink: 0;
   box-shadow: 0 1px 3px rgba(var(--black), .35);
-  background: rgba(var(--white), .04);
+  background: var(--w04);
 }
 
 .tr .nm {
@@ -220,7 +346,7 @@ body {
 .tr .ps {
   font-size: 9.5px;
   font-weight: 600;
-  color: rgba(var(--white), .4);
+  color: var(--w50);
 }
 
 .tr .fs {
@@ -233,7 +359,7 @@ body {
 
 .dvd {
   height: 1px;
-  background: rgba(var(--white), .06);
+  background: var(--w06);
   margin: 0 9px;
 }
 
@@ -246,7 +372,7 @@ body {
   padding: 2px 0 4px;
 }
 
-.exinfo.aet { color: rgba(var(--gold), .55); }
+.exinfo.aet { color: var(--gold-55); }
 .exinfo.pen { color: rgba(var(--red), .55); }
 
 .champ {
@@ -279,7 +405,6 @@ body {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 2px;
-  color: rgba(var(--white), .3);
   text-align: center;
   padding: 6px 4px 10px;
   white-space: nowrap;
@@ -293,9 +418,9 @@ body {
   border-radius: 999px;
   font-size: 11px;
   font-weight: 700;
-  color: rgba(var(--white), .4);
+  color: var(--w50);
   background: rgba(var(--white), .03);
-  border: 1px solid rgba(var(--white), .07);
+  border: 1px solid var(--w07);
   cursor: pointer;
   transition: var(--transition);
 }
@@ -308,7 +433,7 @@ body {
 .tab.on {
   background: rgba(var(--green), .2);
   color: #fff;
-  border-color: rgba(var(--green), .45);
+  border-color: var(--green-45);
   box-shadow: 0 0 16px rgba(var(--green), .12);
 }
 
@@ -316,7 +441,7 @@ body {
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(var(--white), .07);
+  border: 3px solid var(--w07);
   border-top-color: rgb(var(--green));
   border-radius: 50%;
   animation: sp .7s linear infinite;
@@ -338,7 +463,7 @@ body {
 /* ───── SCROLLBAR ───── */
 ::-webkit-scrollbar { height: 5px; }
 ::-webkit-scrollbar-track { background: rgba(var(--white), .02); }
-::-webkit-scrollbar-thumb { background: rgba(var(--green), .3); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--green-30); border-radius: 3px; }
 
 /* ───── SCORE MODAL ───── */
 .modal-bg {
@@ -362,7 +487,7 @@ body {
 
 .modal {
   background: linear-gradient(160deg, #0d1f0d, #132613);
-  border: 1px solid rgba(var(--green), .3);
+  border: 1px solid var(--green-30);
   border-radius: var(--radius-lg);
   padding: 24px 28px;
   width: 340px;
@@ -377,7 +502,7 @@ body {
   margin-bottom: 18px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: rgba(var(--white), .7);
+  color: var(--w70);
 }
 
 .modal-team {
@@ -405,8 +530,8 @@ body {
   width: 52px;
   padding: 6px 4px;
   text-align: center;
-  background: rgba(var(--white), .08);
-  border: 1px solid rgba(var(--white), .15);
+  background: var(--w08);
+  border: 1px solid var(--w15);
   border-radius: 8px;
   color: #fff;
   font-size: 18px;
@@ -423,12 +548,12 @@ body {
 }
 
 .modal-team input:focus {
-  border-color: rgba(var(--green), .6);
+  border-color: var(--green-60);
 }
 
 .modal-sep {
   height: 1px;
-  background: rgba(var(--white), .08);
+  background: var(--w08);
   margin: 2px 0;
 }
 
@@ -450,8 +575,8 @@ body {
 }
 
 .btn-cancel {
-  background: rgba(var(--white), .08);
-  color: rgba(var(--white), .5);
+  background: var(--w08);
+  color: var(--w50);
 }
 
 .btn-cancel:hover {
@@ -460,12 +585,12 @@ body {
 }
 
 .btn-save {
-  background: rgba(var(--green), .6);
+  background: var(--green-60);
   color: #fff;
 }
 
 .btn-save:hover {
-  background: rgba(var(--green), .8);
+  background: var(--green-80);
 }
 
 .btn-clear {
@@ -482,7 +607,7 @@ body {
 
 .modal-note {
   font-size: 9px;
-  color: rgba(var(--white), .25);
+  color: var(--w28);
   text-align: center;
   margin-top: 10px;
   line-height: 1.4;
@@ -490,7 +615,7 @@ body {
 
 .modal-match-label {
   font-size: 10px;
-  color: rgba(var(--white), .3);
+  color: var(--w30);
   text-align: center;
   margin-bottom: 4px;
   font-weight: 600;

@@ -4,10 +4,10 @@ const DATA_URL =
 const FLAG_BASE = 'https://flagcdn.com/w40/';
 const DISPLAY_TZ = 7;               // UTC+7 (Vietnam time)
 const DISPLAY_TZ_LABEL = 'VN';      // label shown next to time
-const CONN_W = '32px';              // connector column width
-const CARD_W = '240px';             // match card width (mirrors CSS --card-w)
 const MIN_MATCH = 73;               // first knockout match number
 const MAX_MATCH = 104;              // last knockout match number
+const FINAL_NUM = 104;
+const THIRD_NUM = 103;
 
 /* ══════════════════════════════════════════════════════════
    OFFICIAL BRACKET TREE  (from FIFA / openfootball)
@@ -40,9 +40,6 @@ const RIGHT = {
   ],
 };
 
-const FINAL_NUM = 104;
-const THIRD_NUM = 103;
-
 /* ══════════════════════════════════════════════════════════
    WINNER / LOSER PROPAGATION MAP
    ══════════════════════════════════════════════════════════ */
@@ -73,7 +70,7 @@ const LOSER_MAP = {
   102: { m: 103, s: 'team2' },
 };
 
-/* ══════ KNOCKOUT ROUND NAMES (for data filtering) ══════ */
+/* ══════ KNOCKOUT ROUND FILTER ══════ */
 const KO_ROUNDS = new Set([
   'Round of 32', 'Round of 16',
   'Quarter-final', 'Quarterfinals',
@@ -164,8 +161,7 @@ function fdt(dateStr, timeStr) {
     weekday: 'short', month: 'short', day: 'numeric',
   });
   if (timeStr) {
-    const local = convertToLocalTime(timeStr);
-    str += ' · ' + local + ' ' + DISPLAY_TZ_LABEL;
+    str += ' · ' + convertToLocalTime(timeStr) + ' ' + DISPLAY_TZ_LABEL;
   }
   return str;
 }
@@ -272,16 +268,7 @@ function clearDownstream(matchNum) {
   }
 }
 
-/* ══════ REUSABLE HTML FRAGMENTS ══════ */
-const CONN_STYLE = `flex:0 0 ${CONN_W};display:flex;flex-direction:column;`;
-const FLEX_STRETCH = 'display:flex;align-items:stretch;flex:1;';
-const FLEX_COL_AUTO = 'display:flex;flex-direction:column;flex:0 0 auto;';
-const FLEX_COL_GROW = 'display:flex;flex-direction:column;flex:1 1 0;';
-const FLEX_COL_CENTER = FLEX_COL_AUTO + 'justify-content:center;';
-const ROUND_LABEL_STYLE = 'font-size:8px;font-weight:700;text-transform:uppercase;'
-  + 'letter-spacing:1.5px;color:rgba(255,255,255,.2);text-align:center;margin-bottom:4px;';
-const MANUAL_BADGE_STYLE = 'font-size:6px;color:rgba(250,204,21,.4);margin-left:3px;';
-
+/* ══════ REUSABLE HTML HELPERS ══════ */
 function flagImg(url, alt) {
   return url
     ? `<img class="fl" src="${url}" alt="${alt || ''}" `
@@ -289,12 +276,24 @@ function flagImg(url, alt) {
     : '<div class="fl"></div>';
 }
 
+function connPair(dir) {
+  return `<div class="conn-col">
+  <div class="conn-pair ${dir}"></div>
+</div>`;
+}
+
+const connR = `<div class="conn-col">
+  <div class="conn-pair dir-r single"></div>
+</div>`;
+
+const connL = `<div class="conn-col">
+  <div class="conn-pair dir-l single"></div>
+</div>`;
+
 /* ══════ CARD HTML ══════ */
 function card(m, opts = {}) {
   if (!m) {
-    return `<div class="mc" style="width:${CARD_W};text-align:center;`
-      + 'padding:20px 8px;color:rgba(255,255,255,.12);font-size:11px;'
-      + 'font-weight:600;">Match TBD</div>';
+    return '<div class="mc mc-tbd">Match TBD</div>';
   }
 
   const w = winner(m);
@@ -331,7 +330,7 @@ function card(m, opts = {}) {
   const editHint = (isEditable && !ft)
     ? '<div class="edit-hint">✏️ Click to enter score</div>' : '';
   const manualBadge = m._manual
-    ? `<span style="${MANUAL_BADGE_STYLE}">✏️</span>` : '';
+    ? '<span class="manual-badge">✏️</span>' : '';
 
   const name1 = displayName(m.team1);
   const name2 = displayName(m.team2);
@@ -357,22 +356,19 @@ function card(m, opts = {}) {
 }
 
 /* ══════════════════════════════════════════════════════════
-   BRACKET BUILDER (recursive nested flex)
+   BRACKET BUILDER (recursive nested flex — all CSS classes)
    ══════════════════════════════════════════════════════════ */
 function buildHalf(tree, direction) {
   const dir = direction === 'right' ? 'dir-r' : 'dir-l';
 
   function matchCell(num, opts = {}) {
     const lbl = opts.roundLabel
-      ? `<div style="${ROUND_LABEL_STYLE}">${opts.roundLabel}</div>`
-      : '';
+      ? `<div class="round-label">${opts.roundLabel}</div>` : '';
     return `<div class="mslot"><div>${lbl}${card(byNum[num] || null, opts)}</div></div>`;
   }
 
-  function connPair() {
-    return `<div style="${CONN_STYLE}">
-    <div class="conn-pair ${dir}" style="flex:1;"></div>
-  </div>`;
+  function cp() {
+    return connPair(dir);
   }
 
   function buildR16Group(r16node, isFirst) {
@@ -380,23 +376,23 @@ function buildHalf(tree, direction) {
     const r32L = isFirst ? 'Round of 32' : '';
     const r16L = isFirst ? 'Round of 16' : '';
     if (direction === 'right') {
-      return `<div style="${FLEX_STRETCH}">
-  <div style="${FLEX_COL_AUTO}">
+      return `<div class="fx-stretch">
+  <div class="fx-col">
     ${matchCell(a, { roundLabel: r32L })}
     ${matchCell(b)}
   </div>
-  ${connPair()}
-  <div style="${FLEX_COL_CENTER}">
+  ${cp()}
+  <div class="fx-col-center">
     ${matchCell(r16node.num, { roundLabel: r16L })}
   </div>
 </div>`;
     }
-    return `<div style="${FLEX_STRETCH}">
-  <div style="${FLEX_COL_CENTER}">
+    return `<div class="fx-stretch">
+  <div class="fx-col-center">
     ${matchCell(r16node.num, { roundLabel: r16L })}
   </div>
-  ${connPair()}
-  <div style="${FLEX_COL_AUTO}">
+  ${cp()}
+  <div class="fx-col">
     ${matchCell(a, { roundLabel: r32L })}
     ${matchCell(b)}
   </div>
@@ -407,23 +403,23 @@ function buildHalf(tree, direction) {
     const [r16a, r16b] = qfnode.r16;
     const qfL = isFirst ? 'Quarter-Finals' : '';
     if (direction === 'right') {
-      return `<div style="${FLEX_STRETCH}">
-  <div style="${FLEX_COL_GROW}">
+      return `<div class="fx-stretch">
+  <div class="fx-col-grow">
     ${buildR16Group(r16a, isFirst)}
     ${buildR16Group(r16b)}
   </div>
-  ${connPair()}
-  <div style="${FLEX_COL_CENTER}">
+  ${cp()}
+  <div class="fx-col-center">
     ${matchCell(qfnode.num, { roundLabel: qfL })}
   </div>
 </div>`;
     }
-    return `<div style="${FLEX_STRETCH}">
-  <div style="${FLEX_COL_CENTER}">
+    return `<div class="fx-stretch">
+  <div class="fx-col-center">
     ${matchCell(qfnode.num, { roundLabel: qfL })}
   </div>
-  ${connPair()}
-  <div style="${FLEX_COL_GROW}">
+  ${cp()}
+  <div class="fx-col-grow">
     ${buildR16Group(r16a, isFirst)}
     ${buildR16Group(r16b)}
   </div>
@@ -432,23 +428,23 @@ function buildHalf(tree, direction) {
 
   const [qf1, qf2] = tree.qf;
   if (direction === 'right') {
-    return `<div style="${FLEX_STRETCH}">
-  <div style="${FLEX_COL_GROW}">
+    return `<div class="fx-stretch">
+  <div class="fx-col-grow">
     ${buildQFGroup(qf1, true)}
     ${buildQFGroup(qf2)}
   </div>
-  ${connPair()}
-  <div style="${FLEX_COL_CENTER}">
+  ${cp()}
+  <div class="fx-col-center">
     ${matchCell(tree.sf, { roundLabel: 'Semi-Finals' })}
   </div>
 </div>`;
   }
-  return `<div style="${FLEX_STRETCH}">
-  <div style="${FLEX_COL_CENTER}">
+  return `<div class="fx-stretch">
+  <div class="fx-col-center">
     ${matchCell(tree.sf, { roundLabel: 'Semi-Finals' })}
   </div>
-  ${connPair()}
-  <div style="${FLEX_COL_GROW}">
+  ${cp()}
+  <div class="fx-col-grow">
     ${buildQFGroup(qf1, true)}
     ${buildQFGroup(qf2)}
   </div>
@@ -456,7 +452,7 @@ function buildHalf(tree, direction) {
 }
 
 function buildFinalCol() {
-  return `<div style="${FLEX_COL_CENTER}gap:24px;padding:0 4px;">
+  return `<div class="final-col">
   <div>
     <div class="rhdr gold">Final</div>
     ${card(byNum[FINAL_NUM] || null, { isFinal: true })}
@@ -464,6 +460,15 @@ function buildFinalCol() {
   <div>
     <div class="rhdr">3rd Place</div>
     ${card(byNum[THIRD_NUM] || null, { isThird: true })}
+  </div>
+</div>`;
+}
+
+function finalOnlyCol() {
+  return `<div class="final-only-col">
+  <div>
+    <div class="rhdr gold">Final</div>
+    ${card(byNum[FINAL_NUM] || null, { isFinal: true })}
   </div>
 </div>`;
 }
@@ -481,23 +486,8 @@ function renderAll() {
   buildView(document.getElementById('vRight'), 'right');
 }
 
-const connR = `<div style="${CONN_STYLE}">
-  <div class="conn-pair dir-r single" style="flex:1;"></div>
-</div>`;
-const connL = `<div style="${CONN_STYLE}">
-  <div class="conn-pair dir-l single" style="flex:1;"></div>
-</div>`;
-
-function finalOnlyCol() {
-  return `<div style="${FLEX_COL_CENTER}padding:0 4px;">
-  <div><div class="rhdr gold">Final</div>
-  ${card(byNum[FINAL_NUM] || null, { isFinal: true })}</div>
-</div>`;
-}
-
 function buildView(container, mode) {
-  let html = '<div class="bracket-scroll">';
-  html += '<div style="display:flex;align-items:stretch;min-height:820px;">';
+  let html = '<div class="bracket-scroll"><div class="bracket-body">';
 
   if (mode === 'full') {
     html += buildHalf(LEFT, 'right');

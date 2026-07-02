@@ -1,0 +1,3 @@
+- color with transparent value that use multiple times (ex: rgba(var(--green), .3) should be used with variable
+- when I adjust variable card-w to smaller value (I want card shorter), the connection bracket doesn't follow together, fix this issue.
+- I don't want to use inline style for generated html element, try to use css class.
