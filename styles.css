@@ -717,7 +717,7 @@ body {
 .site-footer p + p { margin-top: 4px; }
 
 .site-footer a {
-  text-decoration: underline;
+  text-decoration: none;
   color: inherit;
 }
 
