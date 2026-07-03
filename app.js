@@ -2,8 +2,8 @@
 const DATA_URL =
   'https://raw.githubusercontent.com/openfootball/worldcup.json/refs/heads/master/2026/worldcup.json';
 const FLAG_BASE = 'https://flagcdn.com/w40/';
-const DISPLAY_TZ = 7;
 const DISPLAY_TZ_LABEL = 'VN';
+const DISPLAY_TZ_IANA = 'Asia/Ho_Chi_Minh';
 const MIN_MATCH = 73;
 const MAX_MATCH = 104;
 const FINAL_NUM = 104;
@@ -132,29 +132,25 @@ function flg(t) {
   return c ? FLAG_BASE + c + '.png' : '';
 }
 
-/* ══════ TIME CONVERSION ══════ */
-function convertToLocalTime(timeStr) {
-  if (!timeStr) return '';
-  const match = timeStr.match(/^(\d{1,2}):(\d{2})\s*UTC([+-]\d+)$/);
-  if (!match) return timeStr;
-  let hours = parseInt(match[1]);
-  const minutes = match[2];
-  const srcOffset = parseInt(match[3]);
-  hours = hours - srcOffset + DISPLAY_TZ;
-  hours = ((hours % 24) + 24) % 24;
-  return String(hours).padStart(2, '0') + ':' + minutes;
-}
-
+/* ══════ DATE / TIME ══════ */
 function fdt(dateStr, timeStr) {
   if (!dateStr) return 'TBD';
-  const d = new Date(dateStr + 'T12:00:00Z');
-  let str = d.toLocaleDateString('en-US', {
-    weekday: 'short', month: 'short', day: 'numeric',
-  });
-  if (timeStr) {
-    str += ' · ' + convertToLocalTime(timeStr) + ' ' + DISPLAY_TZ_LABEL;
+  const tm = timeStr && timeStr.match(/^(\d{1,2}):(\d{2})\s*UTC([+-]\d+)$/);
+  let d;
+  if (tm) {
+    const off = parseInt(tm[3]);
+    const offStr = (off >= 0 ? '+' : '-') + String(Math.abs(off)).padStart(2, '0') + ':00';
+    d = new Date(`${dateStr}T${tm[1].padStart(2, '0')}:${tm[2]}:00${offStr}`);
   }
-  return str;
+  if (!d || isNaN(d)) d = new Date(dateStr + 'T12:00:00Z');
+  const dateLabel = d.toLocaleDateString('en-US', {
+    timeZone: DISPLAY_TZ_IANA, month: 'short', day: 'numeric',
+  });
+  if (!tm) return dateLabel;
+  const timeLabel = d.toLocaleTimeString('en-US', {
+    timeZone: DISPLAY_TZ_IANA, hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+  });
+  return `${dateLabel} · ${timeLabel} ${DISPLAY_TZ_LABEL}`;
 }
 
 /* ══════ GLOBAL STATE ══════ */
@@ -324,7 +320,7 @@ function card(m, opts = {}) {
     <span class="nm">${name1}</span>
     <div class="sb">${p1}<span class="fs">${s1}</span></div>
   </div>
-  <div class="dvd"></div>
+  <!--div class="dvd"></div-->
   <div class="tr ${t2c}">
     ${flagImg(f2, m.team2)}
     <span class="nm">${name2}</span>
