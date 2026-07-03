@@ -65,7 +65,7 @@
 body {
   font-family: 'Inter', sans-serif;
   background: linear-gradient(160deg, #040d04D0 0%, #0a1f0aD0 40%, #071510F0 100%),
-    url('https://i.pinimg.com/1200x/00/9a/49/009a494f8fcaeedc0625d090d28feecf.jpg') top left / auto 100% repeat;
+    url('https://i.pinimg.com/1200x/00/9a/49/009a494f8fcaeedc0625d090d28feecf.jpg') left -70px top 0px / auto 100% repeat;
   min-height: 100vh;
   color: #fff;
 }
