@@ -32,12 +32,8 @@
 
   /* composite: yellow */
   --yellow-12: rgba(var(--yellow), .12);
-  --yellow-35: rgba(var(--yellow), .35);
   --yellow-40: rgba(var(--yellow), .4);
   --yellow-50: rgba(var(--yellow), .5);
-
-  /* composite: red */
-  --red-55: rgba(var(--red), .55);
 
   /* composite: white */
   --w04: rgba(var(--white), .04);
@@ -48,8 +44,6 @@
   --w70: rgba(var(--white), .7);
 
   /* composite: black */
-  --b35: rgba(var(--black), .35);
-  --b40: rgba(var(--black), .4);
   --b50: rgba(var(--black), .5);
   --b65: rgba(var(--black), .65);
 
@@ -134,8 +128,7 @@ body {
   flex: 0 0 auto;
   justify-content: center;
   align-items: center;
-  gap: 24px;
-  padding: 0 4px;
+  gap: 50px;
 }
 
 .final-only-col {
@@ -152,7 +145,7 @@ body {
   letter-spacing: 1.5px;
   color: var(--w70);
   text-align: center;
-  margin-bottom: 4px;
+  margin-bottom: 10px;
 }
 
 .manual-badge {
@@ -204,6 +197,52 @@ body {
 }
 
 .conn-pair.dir-l::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 50%;
+  width: 50%;
+  border-top: var(--conn-border);
+}
+
+.conn-pair.dir-r-f::before {
+  content: '';
+  position: absolute;
+  top: 43%;
+  bottom: 40%;
+  left: 0;
+  width: 50%;
+  border-top: var(--conn-border);
+  border-bottom: var(--conn-border);
+  border-right: var(--conn-border);
+  border-radius: 0 6px 6px 0;
+}
+
+.conn-pair.dir-r-f::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 50%;
+  width: 50%;
+  border-top: var(--conn-border);
+}
+
+.conn-pair.dir-l-f::before {
+  content: '';
+  position: absolute;
+  top: 43%;
+  bottom: 40%;
+  right: 0;
+  width: 50%;
+  border-top: var(--conn-border);
+  border-bottom: var(--conn-border);
+  border-left: var(--conn-border);
+  border-radius: 6px 0 0 6px;
+}
+
+.conn-pair.dir-l-f::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -348,12 +387,6 @@ body {
   text-align: center;
 }
 
-.dvd {
-  height: 1px;
-  background: var(--w07);
-  margin: 0 9px;
-}
-
 .exinfo {
   text-align: center;
   font-size: 7.5px;
@@ -364,7 +397,6 @@ body {
 }
 
 .exinfo.aet { color: var(--gold-55); }
-.exinfo.pen { color: var(--red-55); }
 
 .champ {
   position: absolute;
@@ -380,16 +412,6 @@ body {
   letter-spacing: .8px;
 }
 
-.edit-hint {
-  text-align: center;
-  font-size: 7px;
-  color: var(--yellow-35);
-  padding: 0 0 4px;
-  font-weight: 700;
-  letter-spacing: .6px;
-  text-transform: uppercase;
-}
-
 /* ───── ROUND HEADER ───── */
 .rhdr {
   font-weight: 800;
@@ -400,32 +422,12 @@ body {
   white-space: nowrap;
 }
 
-.rhdr.gold { color: rgb(var(--gold)); }
-
-/* ───── TABS ───── */
-.tab {
-  padding: 6px 16px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--w50);
-  background: var(--w07);
-  border: 1px solid var(--w07);
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.tab:hover {
-  color: #fff;
-  border-color: var(--green-40);
-}
-
-.tab.on {
-  background: var(--green-20);
-  color: #fff;
-  border-color: var(--green-45);
-  box-shadow: 0 0 16px var(--green-12);
-}
+.rhdr.gold { 
+  background: linear-gradient(to right, #4ade80, #6ee7b7, #fbbf24);
+  background-clip: text;
+  color: transparent;
+  font-size: 24px;
+ }
 
 /* ───── SPINNER ───── */
 .spinner {
@@ -616,7 +618,7 @@ body {
 /* ───── HEADER ───── */
 .site-header {
   text-align: center;
-  padding: 28px 16px 12px;
+  padding: 0px 0 12px;
 }
 
 .header-title-row {
@@ -632,10 +634,8 @@ body {
 .site-title {
   font-size: 24px;
   font-weight: 900;
-  letter-spacing: -0.025em;
   background: linear-gradient(to right, #4ade80, #6ee7b7, #fbbf24);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: transparent;
   background-clip: text;
 }
 
@@ -644,33 +644,19 @@ body {
 }
 
 .site-hosts {
-  font-size: 10px;
-  color: rgba(255, 255, 255, .25);
   letter-spacing: 3px;
   text-transform: uppercase;
 }
 
 .stage-label {
-  font-size: 14px;
   font-weight: 700;
-  color: rgba(255, 255, 255, .45);
   margin-top: 8px;
 }
 
 .edit-tip {
   font-size: 10px;
-  color: rgba(var(--yellow), .3);
+  color: var(--yellow-50);
   margin-top: 4px;
-}
-
-/* ───── TAB BAR ───── */
-.tab-bar {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  padding: 0 16px;
-  flex-wrap: wrap;
 }
 
 /* ───── LOADING ───── */
@@ -728,9 +714,9 @@ body {
 /* ───── FOOTER ───── */
 .site-footer {
   text-align: center;
-  padding: 20px 16px;
-  color: rgba(255, 255, 255, .18);
-  font-size: 9px;
+  padding: 10px 0px;
+  color: var(--w50);
+  font-size: 11px;
 }
 
 .site-footer p + p { margin-top: 4px; }

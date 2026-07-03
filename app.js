@@ -269,6 +269,14 @@ const connL = `<div class="conn-col">
   <div class="conn-pair dir-l single"></div>
 </div>`;
 
+const sfFinalConnR = `<div class="conn-col">
+  <div class="conn-pair dir-l-f"></div>
+</div>`;
+
+const sfFinalConnL = `<div class="conn-col">
+  <div class="conn-pair dir-r-f"></div>
+</div>`;
+
 /* ══════ CARD HTML ══════ */
 function card(m, opts = {}) {
   if (!m) {
@@ -458,8 +466,6 @@ function renderAll() {
   });
 
   buildView(document.getElementById('vFull'), 'full');
-  buildView(document.getElementById('vLeft'), 'left');
-  buildView(document.getElementById('vRight'), 'right');
 }
 
 function buildView(container, mode) {
@@ -467,9 +473,9 @@ function buildView(container, mode) {
 
   if (mode === 'full') {
     html += buildHalf(LEFT, 'right');
-    html += connR;
+    html += sfFinalConnR;
     html += buildFinalCol();
-    html += connL;
+    html += sfFinalConnL;
     html += buildHalf(RIGHT, 'left');
   } else if (mode === 'left') {
     html += buildHalf(LEFT, 'right');
@@ -561,17 +567,7 @@ function clearScore() {
   closeModal();
 }
 
-/* ══════ TABS ══════ */
-document.querySelectorAll('.tab').forEach(b => {
-  b.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
-    b.classList.add('on');
-    document.querySelectorAll('.bv').forEach(x => x.classList.add('hidden'));
-    const id = b.dataset.v === 'full'
-      ? 'vFull' : (b.dataset.v === 'left' ? 'vLeft' : 'vRight');
-    document.getElementById(id).classList.remove('hidden');
-  });
-});
+
 
 /* ══════ KEYBOARD ══════ */
 document.addEventListener('keydown', e => {
