@@ -2,7 +2,6 @@
 const DATA_URL =
   'https://raw.githubusercontent.com/openfootball/worldcup.json/refs/heads/master/2026/worldcup.json';
 const FLAG_BASE = 'https://flagcdn.com/w40/';
-const DISPLAY_TZ_LABEL = 'VN';
 const DISPLAY_TZ_IANA = 'Asia/Ho_Chi_Minh';
 const MIN_MATCH = 73;
 const MAX_MATCH = 104;
@@ -150,7 +149,7 @@ function fdt(dateStr, timeStr) {
   const timeLabel = d.toLocaleTimeString('en-US', {
     timeZone: DISPLAY_TZ_IANA, hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
   });
-  return `${dateLabel} · ${timeLabel} ${DISPLAY_TZ_LABEL}`;
+  return `${dateLabel} · ${timeLabel}`;
 }
 
 /* ══════ GLOBAL STATE ══════ */
@@ -304,7 +303,6 @@ function card(m, opts = {}) {
   const p2 = pen ? `<span class="ps">(${pen[1]})</span>` : '';
   const exH = extra === 'aet'
     ? '<div class="exinfo aet">After Extra Time</div>' : '';
-  const mn = m.num ? `<span class="mnum">#${m.num}</span>` : '';
   const vn = m.ground || '';
   const dateTimeStr = fdt(m.date, m.time);
 
@@ -321,7 +319,7 @@ function card(m, opts = {}) {
 
   return `<div class="mc ${cls} ${editCls}"${editClick}>
   ${badge}
-  <div class="meta"><span>${dateTimeStr}</span>${mn}${manualBadge}</div>
+  <div class="meta"><span>${dateTimeStr}</span>${manualBadge}</div>
   ${vn ? `<div class="venue" title="${vn}">📍 ${vn}</div>` : ''}
   <div class="tr ${t1c}">
     ${flagImg(f1, m.team1)}

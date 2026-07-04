@@ -319,14 +319,6 @@ body {
   color: var(--w50);
 }
 
-.mc .mnum {
-  background: var(--w07);
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-size: 10px;
-  letter-spacing: .4px;
-}
-
 .mc .venue {
   font-size: 10px;
   color: var(--w28);
@@ -638,6 +630,7 @@ body {
   background: linear-gradient(to right, #4ade80, #6ee7b7, #fbbf24);
   color: transparent;
   background-clip: text;
+  text-transform: uppercase;
 }
 
 @media (min-width: 768px) {
@@ -652,6 +645,7 @@ body {
 .stage-label {
   font-weight: 700;
   margin-top: 8px;
+  text-transform: uppercase;
 }
 
 /* ───── LOADING ───── */
