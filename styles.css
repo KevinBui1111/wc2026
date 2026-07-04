@@ -9,17 +9,12 @@
   --red: 239, 68, 68;
   --white: 255, 255, 255;
   --black: 0, 0, 0;
-  --win: 34, 197, 94;
 
   /* composite: green */
   --green-02: rgba(var(--green), .025);
-  --green-12: rgba(var(--green), .12);
   --green-18: rgba(var(--green), .18);
-  --green-20: rgba(var(--green), .2);
   --green-30: rgba(var(--green), .3);
   --green-35: rgba(var(--green), .35);
-  --green-40: rgba(var(--green), .4);
-  --green-45: rgba(var(--green), .45);
   --green-60: rgba(var(--green), .6);
   --green-80: rgba(var(--green), .8);
 
@@ -32,7 +27,6 @@
 
   /* composite: yellow */
   --yellow-12: rgba(var(--yellow), .12);
-  --yellow-40: rgba(var(--yellow), .4);
   --yellow-50: rgba(var(--yellow), .5);
 
   /* composite: white */
@@ -301,7 +295,7 @@ body {
   padding: 20px 8px;
   color: var(--w14);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: bold;
 }
 
 .mc .meta {
@@ -309,8 +303,8 @@ body {
   justify-content: space-between;
   align-items: center;
   gap: 6px;
-  padding: 4px 9px 6px;
-  font-size: 10px;
+  padding: 4px 9px;
+  font-size: 11px;
   color: var(--w50);
 }
 
@@ -322,7 +316,6 @@ body {
 .mc .meta .venue {
   min-width: 0;
   flex-shrink: 1;
-  color: var(--w28);
   text-align: right;
   white-space: nowrap;
   overflow: hidden;
@@ -338,7 +331,6 @@ body {
   transition: background .15s;
 }
 
-/* .tr.w { background: rgba(var(--win), .12); } */
 .tr.l { opacity: .6; }
 
 .tr .fl {
@@ -373,7 +365,7 @@ body {
 
 .tr .fs {
   font-size: 14px;
-  font-weight: 800;
+  font-weight: bold;
   color: #fff;
   min-width: 14px;
   text-align: center;
@@ -385,9 +377,8 @@ body {
 
 .exinfo {
   text-align: center;
-  font-size: 7.5px;
-  font-weight: 700;
-  letter-spacing: .8px;
+  font-size: 9px;
+  font-weight: bold;
   text-transform: uppercase;
   padding: 2px 0 4px;
 }
@@ -401,7 +392,7 @@ body {
   background: linear-gradient(135deg, #f59e0b, #d97706);
   color: #fff;
   font-size: 7px;
-  font-weight: 800;
+  font-weight: bold;
   padding: 2px 7px;
   border-radius: 0 9px 0 7px;
   text-transform: uppercase;
@@ -410,7 +401,7 @@ body {
 
 /* ───── ROUND HEADER ───── */
 .rhdr {
-  font-weight: 800;
+  font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 2px;
   text-align: center;
@@ -485,7 +476,7 @@ body {
 
 .modal h3 {
   font-size: 14px;
-  font-weight: 800;
+  font-weight: bold;
   text-align: center;
   margin-bottom: 18px;
   text-transform: uppercase;
@@ -510,7 +501,7 @@ body {
 
 .modal-team .m-name {
   flex: 1;
-  font-weight: 700;
+  font-weight: bold;
 }
 
 .modal-team input[type=number] {
@@ -522,7 +513,7 @@ body {
   border-radius: 8px;
   color: #fff;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: bold;
   outline: none;
   transition: border-color .2s;
   -moz-appearance: textfield;
@@ -555,7 +546,7 @@ body {
   padding: 7px 18px;
   border-radius: 8px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: bold;
   cursor: pointer;
   transition: var(--transition);
   border: none;
@@ -602,10 +593,10 @@ body {
 
 .modal-match-label {
   font-size: 10px;
-  color: var(--w30);
+  color: var(--w28);
   text-align: center;
   margin-bottom: 4px;
-  font-weight: 600;
+  font-weight: bold;
 }
 
 /* ───── UTILITY ───── */
@@ -646,7 +637,7 @@ body {
 }
 
 .stage-label {
-  font-weight: 700;
+  font-weight: bold;
   margin-top: 8px;
   text-transform: uppercase;
 }
@@ -678,7 +669,7 @@ body {
 
 .err-title {
   color: #f87171;
-  font-weight: 700;
+  font-weight: bold;
   margin-bottom: 4px;
 }
 
@@ -694,7 +685,7 @@ body {
   background: #15803d;
   border: none;
   border-radius: 8px;
-  font-weight: 700;
+  font-weight: bold;
   font-size: 12px;
   color: #fff;
   cursor: pointer;
@@ -720,23 +711,5 @@ body {
 
 .site-footer a:hover { color: rgba(255, 255, 255, .4); }
 
-.legend-dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  margin-right: 2px;
-  vertical-align: middle;
-}
-
-.legend-dot-win { background: rgba(var(--win), .5); }
-
-.legend-dot-elim {
-  background: rgba(255, 255, 255, .1);
-  margin-left: 8px;
-}
-
-.legend-aet { color: rgba(251, 191, 36, .5); margin-left: 8px; }
-.legend-pen { color: rgba(var(--red), .5); margin-left: 8px; }
 .legend-edit { color: rgba(var(--yellow), .3); margin-left: 8px; }
 .legend-clock { margin-left: 8px; }

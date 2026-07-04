@@ -312,7 +312,7 @@ function card(m, opts = {}) {
   const p1 = pen ? `<span class="ps">(${pen[0]})</span>` : '';
   const p2 = pen ? `<span class="ps">(${pen[1]})</span>` : '';
   const exH = extra === 'aet'
-    ? '<div class="exinfo aet">After Extra Time</div>' : '';
+    ? '<div class="exinfo aet">Extra Time</div>' : '';
   const vn = m.ground || '';
   const dateTimeStr = fdt(m.date, m.time);
 
@@ -330,7 +330,7 @@ function card(m, opts = {}) {
   ${badge}
   <div class="meta">
     <span class="dt">${dateTimeStr}</span>
-    ${vn ? `<span class="venue" title="${vn}">📍 ${shortVenue(vn)}</span>` : ''}
+    ${vn ? `<span class="venue" title="${vn}">📌 ${shortVenue(vn)}</span>` : ''}
   </div>
   <div class="tr ${t1c}">
     ${flagImg(f1, m.team1)}
