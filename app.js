@@ -130,7 +130,7 @@ function flg(t) {
   const c = CC[t];
   return c ? FLAG_BASE + c + '.png' : '';
 }
-manual-badge
+
 /* ══════ VENUE ══════ */
 function shortVenue(ground) {
   if (!ground) return '';
@@ -321,8 +321,7 @@ function card(m, opts = {}) {
   const editClick = isEditable && m.num
     ? ` onclick="openModal(${m.num})"` : '';
   const editHint = '';
-  const manualBadge = m._manual
-    ? '<span class="manual-badge">✏️</span>' : '';
+  const scoreCls = m._manual ? 'fs manual' : 'fs';
 
   const name1 = displayName(m.team1);
   const name2 = displayName(m.team2);
@@ -330,19 +329,19 @@ function card(m, opts = {}) {
   return `<div class="mc ${cls} ${editCls}"${editClick}>
   ${badge}
   <div class="meta">
-    <span class="dt">${dateTimeStr}${manualBadge}</span>
+    <span class="dt">${dateTimeStr}</span>
     ${vn ? `<span class="venue" title="${vn}">📍 ${shortVenue(vn)}</span>` : ''}
   </div>
   <div class="tr ${t1c}">
     ${flagImg(f1, m.team1)}
     <span class="nm">${name1}</span>
-    <div class="sb">${p1}<span class="fs">${s1}</span></div>
+    <div class="sb">${p1}<span class="${scoreCls}">${s1}</span></div>
   </div>
   <!--div class="dvd"></div-->
   <div class="tr ${t2c}">
     ${flagImg(f2, m.team2)}
     <span class="nm">${name2}</span>
-    <div class="sb">${p2}<span class="fs">${s2}</span></div>
+    <div class="sb">${p2}<span class="${scoreCls}">${s2}</span></div>
   </div>
   ${exH}
   ${editHint}

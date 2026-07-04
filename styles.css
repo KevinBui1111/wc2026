@@ -149,12 +149,6 @@ body {
   margin-bottom: 10px;
 }
 
-.manual-badge {
-  font-size: 6px;
-  color: var(--yellow-40);
-  margin-left: 3px;
-}
-
 /* ───── CONNECTORS ───── */
 .conn-col > .conn-pair {
   flex: 1;
@@ -383,6 +377,10 @@ body {
   color: #fff;
   min-width: 14px;
   text-align: center;
+}
+
+.tr .fs.manual {
+  color: rgb(var(--yellow));
 }
 
 .exinfo {
