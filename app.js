@@ -312,7 +312,7 @@ function card(m, opts = {}) {
   const p1 = pen ? `<span class="ps">(${pen[0]})</span>` : '';
   const p2 = pen ? `<span class="ps">(${pen[1]})</span>` : '';
   const exH = extra === 'aet'
-    ? '<div class="exinfo aet">Extra Time</div>' : '';
+    ? '<div class="aet">Extra Time</div>' : '';
   const vn = m.ground || '';
   const dateTimeStr = fdt(m.date, m.time);
 

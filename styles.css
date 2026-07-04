@@ -14,16 +14,12 @@
   --green-02: rgba(var(--green), .025);
   --green-18: rgba(var(--green), .18);
   --green-30: rgba(var(--green), .3);
-  --green-35: rgba(var(--green), .35);
   --green-60: rgba(var(--green), .6);
   --green-80: rgba(var(--green), .8);
 
   /* composite: gold */
-  --gold-03: rgba(var(--gold), .035);
-  --gold-18: rgba(var(--gold), .18);
   --gold-30: rgba(var(--gold), .3);
   --gold-50: rgba(var(--gold), .5);
-  --gold-55: rgba(var(--gold), .55);
 
   /* composite: yellow */
   --yellow-12: rgba(var(--yellow), .12);
@@ -39,7 +35,6 @@
 
   /* composite: black */
   --b50: rgba(var(--black), .5);
-  --b65: rgba(var(--black), .65);
 
   /* layout */
   --card-w: 180px;
@@ -261,17 +256,16 @@ body {
 .mc:hover {
   transform: translateY(-1px) scale(1.015);
   box-shadow: 0 8px 28px var(--green-18);
-  border-color: var(--green-35);
   background: var(--w07);
 }
 
 .mc.final {
   border-color: var(--gold-30);
-  background: var(--gold-03);
+  background: var(--yellow-12);
 }
 
 .mc.final:hover {
-  box-shadow: 0 8px 28px var(--gold-18);
+  box-shadow: 0 8px 28px var(--gold-30);
   border-color: var(--gold-50);
 }
 
@@ -375,15 +369,14 @@ body {
   color: rgb(var(--yellow));
 }
 
-.exinfo {
+.aet {
   text-align: center;
   font-size: 9px;
   font-weight: bold;
   text-transform: uppercase;
   padding: 2px 0 4px;
+  color: var(--gold-50);
 }
-
-.exinfo.aet { color: var(--gold-55); }
 
 .champ {
   position: absolute;
@@ -449,7 +442,6 @@ body {
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: var(--b65);
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
