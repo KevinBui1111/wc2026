@@ -314,16 +314,22 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4px 9px;
+  gap: 6px;
+  padding: 4px 9px 6px;
   font-size: 10px;
   color: var(--w50);
 }
 
-.mc .venue {
-  font-size: 10px;
+.mc .meta .dt {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.mc .meta .venue {
+  min-width: 0;
+  flex-shrink: 1;
   color: var(--w28);
-  text-align: center;
-  padding: 0 8px 3px;
+  text-align: right;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -353,8 +359,7 @@ body {
 
 .tr .nm {
   flex: 1;
-  font-size: 13px;
-  color: #fff;
+  font-size: 14px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

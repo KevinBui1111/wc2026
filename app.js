@@ -130,6 +130,16 @@ function flg(t) {
   const c = CC[t];
   return c ? FLAG_BASE + c + '.png' : '';
 }
+manual-badge
+/* ══════ VENUE ══════ */
+function shortVenue(ground) {
+  if (!ground) return '';
+  let s = ground.split('(')[0].trim();
+  s = s.split('/')[0].trim();
+  const words = s.split(' ');
+  if (words.length > 2) s = words.slice(0, 2).join(' ');
+  return s;
+}
 
 /* ══════ DATE / TIME ══════ */
 function fdt(dateStr, timeStr) {
@@ -319,8 +329,10 @@ function card(m, opts = {}) {
 
   return `<div class="mc ${cls} ${editCls}"${editClick}>
   ${badge}
-  <div class="meta"><span>${dateTimeStr}</span>${manualBadge}</div>
-  ${vn ? `<div class="venue" title="${vn}">📍 ${vn}</div>` : ''}
+  <div class="meta">
+    <span class="dt">${dateTimeStr}${manualBadge}</span>
+    ${vn ? `<span class="venue" title="${vn}">📍 ${shortVenue(vn)}</span>` : ''}
+  </div>
   <div class="tr ${t1c}">
     ${flagImg(f1, m.team1)}
     <span class="nm">${name1}</span>
