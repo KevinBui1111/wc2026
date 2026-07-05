@@ -141,16 +141,32 @@ function shortVenue(ground) {
   return s;
 }
 
+function kickoffDate(dateStr, timeStr) {
+  if (!dateStr) return null;
+  const tm = timeStr && timeStr.match(/^(\d{1,2}):(\d{2})\s*UTC([+-]\d+)$/);
+  if (tm) {
+    const off = parseInt(tm[3]);
+    const offStr = (off >= 0 ? '+' : '-') + String(Math.abs(off)).padStart(2, '0') + ':00';
+    return new Date(`${dateStr}T${tm[1].padStart(2, '0')}:${tm[2]}:00${offStr}`);
+  }
+  return new Date(dateStr + 'T12:00:00Z');
+}
+
+function isUpcomingMatch(m) {
+  if (!m || !m.date) return false;
+  const d = kickoffDate(m.date, m.time);
+  if (!d || isNaN(d)) return false;
+  const hasResult = Boolean(m.score && m.score.ft);
+  const now = Date.now();
+  const delta = d.getTime() - now;
+  return delta > 0 && delta <= 24 * 60 * 60 * 1000 && !hasResult;
+}
+
 /* ══════ DATE / TIME ══════ */
 function fdt(dateStr, timeStr) {
   if (!dateStr) return 'TBD';
   const tm = timeStr && timeStr.match(/^(\d{1,2}):(\d{2})\s*UTC([+-]\d+)$/);
-  let d;
-  if (tm) {
-    const off = parseInt(tm[3]);
-    const offStr = (off >= 0 ? '+' : '-') + String(Math.abs(off)).padStart(2, '0') + ':00';
-    d = new Date(`${dateStr}T${tm[1].padStart(2, '0')}:${tm[2]}:00${offStr}`);
-  }
+  let d = kickoffDate(dateStr, timeStr);
   if (!d || isNaN(d)) d = new Date(dateStr + 'T12:00:00Z');
   const dateLabel = d.toLocaleDateString('en-US', {
     timeZone: DISPLAY_TZ_IANA, month: 'short', day: 'numeric',
@@ -318,6 +334,7 @@ function card(m, opts = {}) {
 
   const isEditable = canEdit(m);
   const editCls = isEditable ? 'editable' : '';
+  const upcomingCls = isUpcomingMatch(m) ? 'upcoming' : '';
   const editClick = isEditable && m.num
     ? ` onclick="openModal(${m.num})"` : '';
   const editHint = '';
@@ -326,7 +343,7 @@ function card(m, opts = {}) {
   const name1 = displayName(m.team1);
   const name2 = displayName(m.team2);
 
-  return `<div class="mc ${cls} ${editCls}"${editClick}>
+  return `<div class="mc ${cls} ${editCls} ${upcomingCls}"${editClick}>
   ${badge}
   <div class="meta">
     <span class="dt">${dateTimeStr}</span>

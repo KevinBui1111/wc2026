@@ -274,6 +274,17 @@ body {
   background: var(--green-02);
 }
 
+.mc.upcoming {
+  border-color: var(--yellow-50);
+  background: linear-gradient(135deg, var(--yellow-12), var(--w04));
+  box-shadow: 0 0 0 1px var(--gold-30);
+}
+
+.mc.upcoming .meta .dt {
+  color: rgb(var(--yellow));
+  font-weight: 700;
+}
+
 .mc.editable {
   cursor: pointer;
 }
